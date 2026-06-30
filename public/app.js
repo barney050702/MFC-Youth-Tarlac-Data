@@ -1105,9 +1105,24 @@ function renderActivities() {
 
   if (filteredData.length === 0) {
     noRecordsMessage.classList.remove('hidden');
+    document.getElementById('activities-pagination').style.display = 'none';
   } else {
     noRecordsMessage.classList.add('hidden');
-    filteredData.forEach(item => {
+    document.getElementById('activities-pagination').style.display = 'flex';
+
+    // Pagination slicing
+    const totalPages = Math.ceil(filteredData.length / activitiesPerPage);
+    if (currentActivitiesPage > totalPages) currentActivitiesPage = totalPages;
+    if (currentActivitiesPage < 1) currentActivitiesPage = 1;
+
+    document.getElementById('activities-page-info').textContent = `Page ${currentActivitiesPage} of ${totalPages}`;
+    document.getElementById('btn-activities-prev').disabled = currentActivitiesPage === 1;
+    document.getElementById('btn-activities-next').disabled = currentActivitiesPage === totalPages;
+
+    const startIndex = (currentActivitiesPage - 1) * activitiesPerPage;
+    const paginatedData = filteredData.slice(startIndex, startIndex + activitiesPerPage);
+
+    paginatedData.forEach(item => {
       const statusClass = item.status ? item.status.toLowerCase() : 'pending';
       const statusLabel = item.status || 'Pending';
       const statusBadge = `<span class="activity-card-badge status-${statusClass}">${statusLabel}</span>`;
@@ -1820,8 +1835,23 @@ function updateActivityFilters() {
   currentActivityFilters.month = monthFilter.value;
   currentActivityFilters.chapter = chapterFilter.value;
   currentActivityFilters.status = statusFilter.value;
+  currentActivitiesPage = 1; // Reset to first page on filter change
   renderActivities();
 }
+
+let currentActivitiesPage = 1;
+const activitiesPerPage = 12;
+
+document.getElementById('btn-activities-prev').addEventListener('click', () => {
+  if (currentActivitiesPage > 1) {
+    currentActivitiesPage--;
+    renderActivities();
+  }
+});
+document.getElementById('btn-activities-next').addEventListener('click', () => {
+  currentActivitiesPage++;
+  renderActivities();
+});
 
 searchInput.addEventListener('input', updateActivityFilters);
 monthFilter.addEventListener('change', () => {
@@ -1982,9 +2012,24 @@ function renderMembers() {
   memberTableBody.innerHTML = '';
   if (filteredData.length === 0) {
     noMembersMessage.classList.remove('hidden');
+    document.getElementById('members-pagination').style.display = 'none';
   } else {
     noMembersMessage.classList.add('hidden');
-    filteredData.forEach(item => {
+    document.getElementById('members-pagination').style.display = 'flex';
+    
+    // Pagination slicing
+    const totalPages = Math.ceil(filteredData.length / membersPerPage);
+    if (currentMembersPage > totalPages) currentMembersPage = totalPages;
+    if (currentMembersPage < 1) currentMembersPage = 1;
+    
+    document.getElementById('members-page-info').textContent = `Page ${currentMembersPage} of ${totalPages}`;
+    document.getElementById('btn-members-prev').disabled = currentMembersPage === 1;
+    document.getElementById('btn-members-next').disabled = currentMembersPage === totalPages;
+
+    const startIndex = (currentMembersPage - 1) * membersPerPage;
+    const paginatedData = filteredData.slice(startIndex, startIndex + membersPerPage);
+
+    paginatedData.forEach(item => {
       const tr = document.createElement('tr');
       const statusClass = item.status ? item.status.toLowerCase() : 'inactive';
       const statusBadge = `<span class="badge badge-status ${statusClass}">${item.status || 'Inactive'}</span>`;
@@ -2065,12 +2110,27 @@ function updateMemberFilters() {
   currentMemberFilters.search = memberSearchInput.value;
   currentMemberFilters.chapter = memberChapterFilter.value;
   currentMemberFilters.status = memberStatusFilter.value;
+  currentMembersPage = 1; // Reset to first page on filter change
   renderMembers();
 }
 
 memberSearchInput.addEventListener('input', updateMemberFilters);
 memberChapterFilter.addEventListener('change', updateMemberFilters);
 memberStatusFilter.addEventListener('change', updateMemberFilters);
+
+let currentMembersPage = 1;
+const membersPerPage = 50;
+
+document.getElementById('btn-members-prev').addEventListener('click', () => {
+  if (currentMembersPage > 1) {
+    currentMembersPage--;
+    renderMembers();
+  }
+});
+document.getElementById('btn-members-next').addEventListener('click', () => {
+  currentMembersPage++;
+  renderMembers();
+});
 
 
 // ==========================================
@@ -4888,6 +4948,148 @@ if (forgotForm) {
       btnSubmit.textContent = 'Send Recovery Email';
       btnSubmit.disabled = false;
     }
+// ==========================================
+// BULK IMPORT & EXPORT (CSV/JSON)
+// ==========================================
+
+function downloadCSV(data, filename) {
+  if (!data || !data.length) return alert('No data to export!');
+  const replacer = (key, value) => value === null ? '' : value;
+  const header = Object.keys(data[0]);
+  const csv = [
+    header.join(','), // header row first
+    ...data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+  ].join('\r\n');
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', filename);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Members Export
+const btnExportMemberCsv = document.getElementById('btn-export-member-csv');
+if (btnExportMemberCsv) {
+  btnExportMemberCsv.addEventListener('click', () => {
+    downloadCSV(dbMembers.members, 'members_export.csv');
+  });
+}
+
+// Activities Export
+const btnExportActivityCsv = document.getElementById('btn-export-csv');
+if (btnExportActivityCsv) {
+  btnExportActivityCsv.addEventListener('click', () => {
+    downloadCSV(dbActivities.activities, 'activities_export.csv');
+  });
+}
+
+function downloadJSON(data, filename) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', filename);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Members JSON Backup
+const btnExportMemberJson = document.getElementById('btn-export-member-json');
+if (btnExportMemberJson) {
+  btnExportMemberJson.addEventListener('click', () => {
+    downloadJSON(dbMembers.members, 'members_backup.json');
+  });
+}
+
+// Activities JSON Backup
+const btnExportActivityJson = document.getElementById('btn-export-json');
+if (btnExportActivityJson) {
+  btnExportActivityJson.addEventListener('click', () => {
+    downloadJSON(dbActivities.activities, 'activities_backup.json');
+  });
+}
+
+// Import JSON Logic for Members
+const btnImportMemberTrigger = document.getElementById('btn-import-member-trigger');
+const fileImportMemberInput = document.getElementById('file-import-member-input');
+
+if (btnImportMemberTrigger && fileImportMemberInput) {
+  btnImportMemberTrigger.addEventListener('click', () => fileImportMemberInput.click());
+  fileImportMemberInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (Array.isArray(importedData)) {
+          if (confirm(`Are you sure you want to import ${importedData.length} members? This will add to your existing database.`)) {
+            importedData.forEach(member => {
+              // Basic check to prevent exact name duplicates
+              if (!dbMembers.members.some(m => m.name === member.name)) {
+                member.id = Date.now() + Math.floor(Math.random() * 1000);
+                dbMembers.members.push(member);
+                if (db) db.collection('members').add(member);
+              }
+            });
+            dbMembers.saveToStorage();
+            renderMembers();
+            alert('Import successful!');
+          }
+        } else {
+          alert('Invalid JSON format. Expected an array of objects.');
+        }
+      } catch (err) {
+        alert('Failed to parse JSON file.');
+      }
+    };
+    reader.readAsText(file);
+    fileImportMemberInput.value = ''; // Reset
+  });
+}
+
+// Import JSON Logic for Activities
+const btnImportActivityTrigger = document.getElementById('btn-import-trigger');
+const fileImportActivityInput = document.getElementById('file-import-input');
+
+if (btnImportActivityTrigger && fileImportActivityInput) {
+  btnImportActivityTrigger.addEventListener('click', () => fileImportActivityInput.click());
+  fileImportActivityInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (Array.isArray(importedData)) {
+          if (confirm(`Are you sure you want to import ${importedData.length} activities?`)) {
+            importedData.forEach(act => {
+              if (!dbActivities.activities.some(a => a.activityName === act.activityName && a.date === act.date)) {
+                act.id = Date.now() + Math.floor(Math.random() * 1000);
+                dbActivities.activities.push(act);
+                if (db) db.collection('activities').add(act);
+              }
+            });
+            dbActivities.saveToStorage();
+            renderActivities();
+            alert('Import successful!');
+          }
+        } else {
+          alert('Invalid JSON format. Expected an array of objects.');
+        }
+      } catch (err) {
+        alert('Failed to parse JSON file.');
+      }
+    };
+    reader.readAsText(file);
+    fileImportActivityInput.value = ''; // Reset
   });
 }
 

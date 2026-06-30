@@ -544,8 +544,8 @@
 
       <div class="database-actions">
 
-        <button id="btn-export-csv" class="btn btn-outline" title="Export as PDF">
-          <i data-lucide="file-text"></i> Export PDF
+        <button id="btn-export-csv" class="btn btn-outline" title="Export as CSV">
+          <i data-lucide="file-text"></i> Export CSV
         </button>
         <button id="btn-export-json" class="btn btn-outline" title="Backup database as JSON file">
           <i data-lucide="download"></i> Backup DB
@@ -566,6 +566,14 @@
       <i data-lucide="folder-open" class="empty-icon"></i>
       <h3>No activities match your filters</h3>
       <p>Try refining your search terms or filters above, or add a new activity.</p>
+    </div>
+
+    <div class="pagination-controls" id="activities-pagination" style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-top: 1rem;">
+      <span id="activities-page-info" style="color: var(--text-muted); font-size: 0.875rem;">Page 1 of 1</span>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="btn-activities-prev" class="btn btn-outline" style="padding: 0.5rem 1rem;" disabled>Previous</button>
+        <button id="btn-activities-next" class="btn btn-outline" style="padding: 0.5rem 1rem;">Next</button>
+      </div>
     </div>
     </div> <!-- End panel-activities -->
 
@@ -640,8 +648,8 @@
         </div>
 
         <div class="database-actions">
-          <button id="btn-export-member-csv" class="btn btn-outline" title="Export Members as PDF">
-            <i data-lucide="file-text"></i> Export PDF
+          <button id="btn-export-member-csv" class="btn btn-outline" title="Export Members as CSV">
+            <i data-lucide="file-text"></i> Export CSV
           </button>
           <button id="btn-export-member-json" class="btn btn-outline" title="Backup Members DB as JSON">
             <i data-lucide="download"></i> Backup DB
@@ -687,6 +695,14 @@
           <p>Try refining your search terms or filters above, or add a new member.</p>
         </div>
       </main>
+
+      <div class="pagination-controls" id="members-pagination" style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-top: 1rem;">
+        <span id="members-page-info" style="color: var(--text-muted); font-size: 0.875rem;">Page 1 of 1</span>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btn-members-prev" class="btn btn-outline" style="padding: 0.5rem 1rem;" disabled>Previous</button>
+          <button id="btn-members-next" class="btn btn-outline" style="padding: 0.5rem 1rem;">Next</button>
+        </div>
+      </div>
     </div> <!-- End panel-members -->
 
     <!-- Panel Funds & Expenses -->
