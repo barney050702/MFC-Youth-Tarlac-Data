@@ -4290,7 +4290,7 @@ if (btnAddLeaderAction) {
 // ==========================================
 
 function renderOrgChart() {
-  // Include ALL members (not just 'Active') so leaders assigned via the Leaders tab appear
+  // Include ALL members so leaders assigned via Leaders tab appear
   const members = dbMembers.getAll();
 
   const containerAreaYouth = document.getElementById('org-names-area-youth');
@@ -4299,18 +4299,18 @@ function renderOrgChart() {
 
   if (!containerAreaYouth) return;
 
-  // Helper: get the effective chapter for a member (checks both chapter_area and chapter)
-  const getMemberChapter = (m) => (m.chapter_area || m.chapter || '').trim();
+  // Get the chapter field — stored as UPPERCASE (EAST, NORTH, WEST, SOUTH, CENTRAL, AREA)
+  const getMemberChapter = (m) => (m.chapter_area || m.chapter || '').trim().toUpperCase();
 
   const renderList = (container, rolePattern, chapterMatch = null) => {
     if (!container) return;
     const matched = members.filter(m => {
-      const roleMatches = m.role && m.role.toLowerCase().includes(rolePattern);
-      const effectiveChapter = getMemberChapter(m).toLowerCase();
-      const chapterMatches = chapterMatch
-        ? (effectiveChapter === chapterMatch.toLowerCase() || getMemberChapter(m) === chapterMatch)
-        : true;
-      return roleMatches && chapterMatches;
+      const roleNorm = (m.role || '').toLowerCase().trim();
+      const roleMatches = roleNorm.includes(rolePattern.toLowerCase());
+      if (!roleMatches) return false;
+      if (!chapterMatch) return true;
+      // Compare in uppercase since data is stored as EAST, NORTH, etc.
+      return getMemberChapter(m) === chapterMatch.toUpperCase();
     });
     matched.sort((a, b) => {
       const nameA = formatMemberName(a.name || '');
@@ -4324,33 +4324,36 @@ function renderOrgChart() {
     }
   };
 
+  // Area-level positions (no chapter filter needed)
   renderList(containerAreaYouth, 'area youth');
   renderList(containerAreaLit, 'area lit');
+  if (containerMissionVol) renderList(containerMissionVol, 'mission volunteer');
 
-  const regions = ['East', 'North', 'West', 'South', 'Central'];
+  // Chapter-level positions — regions stored as UPPERCASE in chapter_area field
+  const regions = ['EAST', 'NORTH', 'WEST', 'SOUTH', 'CENTRAL'];
 
   regions.forEach(region => {
     const rLower = region.toLowerCase();
-    renderList(document.getElementById(`org-names-chapter-${rLower}`), 'chapter servant', region);
+    // Match 'Chapter Servant' or 'Chapter Head' or any role containing 'chapter'
+    renderList(document.getElementById(`org-names-chapter-${rLower}`), 'chapter', region);
     renderList(document.getElementById(`org-names-unit-${rLower}`), 'unit', region);
-    renderList(document.getElementById(`org-names-household-${rLower}`), 'household servant', region);
+    renderList(document.getElementById(`org-names-household-${rLower}`), 'household', region);
 
-    // For members, match exactly "Member" or "Participant" or empty role
+    // Members: base-level role or no role
     const containerMember = document.getElementById(`org-names-member-${rLower}`);
     if (containerMember) {
       const baseMembers = members.filter(m => {
-        const isBaseRole = !m.role || m.role.toLowerCase() === 'member' || m.role.toLowerCase() === 'participant';
-        const isRegionMatch = getMemberChapter(m).toLowerCase() === rLower || getMemberChapter(m) === region;
-        return isBaseRole && isRegionMatch;
+        const roleNorm = (m.role || '').toLowerCase().trim();
+        const isBaseRole = !m.role || roleNorm === 'member' || roleNorm === 'participant';
+        return isBaseRole && getMemberChapter(m) === region;
       });
-      if (baseMembers.length === 0) {
-        containerMember.innerHTML = '<p class="empty-names">None</p>';
-      } else {
-        containerMember.innerHTML = baseMembers.map(m => `<p draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" data-member-id="${m.id}" title="${m.name}">${m.name}</p>`).join('');
-      }
+      containerMember.innerHTML = baseMembers.length === 0
+        ? '<p class="empty-names">None</p>'
+        : baseMembers.map(m => `<p draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" data-member-id="${m.id}" title="${m.name}">${m.name}</p>`).join('');
     }
   });
 }
+
 
 
 // Drag and Drop Handlers
