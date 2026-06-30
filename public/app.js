@@ -4069,10 +4069,10 @@ firebase.auth().onAuthStateChanged(async (user) => {
 
 document.getElementById('welcome-admin-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  console.log('Admin login submitted', { email, password });
-  if (!firebase) { console.error('Firebase SDK not loaded'); }
+  if (!firebase) { console.error('Firebase SDK not loaded'); return; }
   const email = document.getElementById('welcome-admin-email').value;
   const password = document.getElementById('welcome-passcode-field').value;
+  console.log('Admin login submitted', { email });
   const welcomeError = document.getElementById('welcome-auth-error');
   const btn = document.getElementById('welcome-login-btn');
   const ogText = btn.innerHTML;
