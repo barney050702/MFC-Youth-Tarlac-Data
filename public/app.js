@@ -3475,65 +3475,6 @@ btnConfirmImport.addEventListener('click', () => {
   alert('Activities imported successfully!');
 });
 
-const fileImportMemberInput = document.getElementById('file-import-member-input');
-const btnImportMemberTrigger = document.getElementById('btn-import-member-trigger');
-const importMemberModal = document.getElementById('import-member-modal');
-const importMemberCountEl = document.getElementById('import-member-count');
-const btnConfirmImportMember = document.getElementById('btn-confirm-import-member');
-const btnCancelImportMember = document.getElementById('btn-cancel-import-member');
-const btnCloseImportMemberModal = document.getElementById('btn-close-import-member-modal');
-
-btnImportMemberTrigger.addEventListener('click', () => fileImportMemberInput.click());
-
-fileImportMemberInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    const fileContent = event.target.result;
-    if (file.name.endsWith('.json')) {
-      try {
-        const data = JSON.parse(fileContent);
-        pendingMemberImport = Array.isArray(data) ? data : [data];
-        promptMemberImport();
-      } catch (err) {
-        alert('Invalid JSON file format.');
-      }
-    } else if (file.name.endsWith('.csv')) {
-      pendingMemberImport = parseCSV(fileContent, 'members');
-      if (pendingMemberImport.length === 0) {
-        alert('Could not find any readable records in the CSV file.');
-      } else {
-        promptMemberImport();
-      }
-    }
-    fileImportMemberInput.value = '';
-  };
-  reader.readAsText(file);
-});
-
-function promptMemberImport() {
-  importMemberCountEl.textContent = pendingMemberImport.length;
-  importMemberModal.classList.remove('hidden');
-}
-
-function closeImportMemberModal() {
-  importMemberModal.classList.add('hidden');
-  pendingMemberImport = null;
-}
-
-btnCloseImportMemberModal.addEventListener('click', closeImportMemberModal);
-btnCancelImportMember.addEventListener('click', closeImportMemberModal);
-
-btnConfirmImportMember.addEventListener('click', () => {
-  if (!pendingMemberImport) return;
-  const mode = document.querySelector('input[name="import-member-mode"]:checked').value;
-  dbMembers.import(pendingMemberImport, mode);
-  closeImportMemberModal();
-  renderMembers();
-  alert('Members directory updated successfully!');
-});
 
 // Parse an array-of-arrays (from SheetJS) into activity records
 function parseSheetRows(rows, type) {
@@ -3889,47 +3830,7 @@ btnExportCsv.addEventListener('click', () => {
   doc.save(`activities_export_${new Date().toISOString().split('T')[0]}.pdf`);
 });
 
-// Members exports
-const btnExportMemberCsv = document.getElementById('btn-export-member-csv');
-const btnExportMemberJson = document.getElementById('btn-export-member-json');
 
-btnExportMemberJson.addEventListener('click', () => {
-  downloadJSON(dbMembers.getAll(), `members_db_backup_${new Date().toISOString().split('T')[0]}.json`);
-});
-
-btnExportMemberCsv.addEventListener('click', () => {
-  const allMembers = [...dbMembers.getAll()];
-  allMembers.sort((a, b) => a.name.localeCompare(b.name));
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('landscape');
-
-  doc.setFontSize(16);
-  doc.text('Members Export', 14, 15);
-  doc.setFontSize(10);
-  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
-
-  const headers = [['Name', 'Chapter/Area', 'Role', 'Age', 'Contact', 'Status']];
-  const rows = allMembers.map(item => [
-    item.name || '',
-    item.chapter_area || '',
-    item.role || '',
-    item.age || 0,
-    item.contact || '',
-    item.status || ''
-  ]);
-
-  doc.autoTable({
-    head: headers,
-    body: rows,
-    startY: 28,
-    theme: 'grid',
-    styles: { fontSize: 8 },
-    headStyles: { fillColor: [30, 58, 138] }
-  });
-
-  doc.save(`members_export_${new Date().toISOString().split('T')[0]}.pdf`);
-});
 
 // ==========================================
 // ADMIN AUTHENTICATION CONTROLLER & ACTIONS
