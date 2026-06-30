@@ -4646,7 +4646,10 @@ function renderResources(category) {
     return;
   }
 
-  const files = dbResources.getAll().filter(r => r.category === category);
+  let files = dbResources.getAll().filter(r => r.category === category);
+  
+  // Sort alphabetically by title
+  files.sort((a, b) => a.title.localeCompare(b.title));
 
   if (files.length === 0) {
     if (category === 'songboard' && dbResources.getAll().length === 0) {
@@ -4669,6 +4672,8 @@ function renderResources(category) {
         dbResources.add(f);
         files.push(f); // also render them immediately
       });
+      // Re-sort just in case
+      files.sort((a, b) => a.title.localeCompare(b.title));
     } else {
       contentArea.innerHTML = `
         <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
@@ -4680,15 +4685,27 @@ function renderResources(category) {
     }
   }
 
-  contentArea.innerHTML = files.map(file => `
+  contentArea.innerHTML = files.map(file => {
+    let displayTitle = file.title;
+    let displayFilename = file.filename;
+    
+    // Fix upper and lower case issues
+    displayTitle = displayTitle.replace(/SESSION/gi, 'Session');
+    displayTitle = displayTitle.replace(/Session 5 Growing/gi, 'Session 5 - Growing');
+    
+    displayFilename = displayFilename.replace(/SESSION/gi, 'Session');
+    displayFilename = displayFilename.replace(/God_s/gi, "God's");
+    displayFilename = displayFilename.replace(/Gift_/g, 'Gift:');
+    
+    return `
     <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;">
       <div style="display: flex; align-items: center; gap: 1rem; text-align: left; overflow: hidden;">
         <div style="background: var(--primary); width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="${file.icon || 'file'}" style="color: white;"></i>
         </div>
         <div style="overflow: hidden;">
-          <h4 style="margin: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${file.title}">${file.title}</h4>
-          <span style="font-size: 0.85rem; color: var(--text-dim);">${file.filename}</span>
+          <h4 style="margin: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${displayTitle}">${displayTitle}</h4>
+          <span style="font-size: 0.85rem; color: var(--text-dim);">${displayFilename}</span>
         </div>
       </div>
       <div style="display: flex; gap: 0.5rem;">
@@ -4698,7 +4715,7 @@ function renderResources(category) {
         ${isAdmin && file.id ? `<button class="btn btn-outline" style="padding: 0.5rem; border-color: rgba(255,0,0,0.3); color: #ff6b6b;" onclick="deleteResource(${file.id})" title="Delete"><i data-lucide="trash-2"></i></button>` : ''}
       </div>
     </div>
-  `).join('');
+  `}).join('');
   
   lucide.createIcons();
 }
