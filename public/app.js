@@ -233,6 +233,7 @@ function refreshActiveView() {
   const tabAgenda = document.getElementById('sidebar-tab-agenda');
   const tabLeaders = document.getElementById('sidebar-tab-leaders');
   const tabOrgChart = document.getElementById('sidebar-tab-org-chart');
+  const tabResources = document.getElementById('sidebar-tab-resources');
 
   if (tabDashboard?.classList.contains('active')) renderDashboard();
   if (tabActivities?.classList.contains('active')) renderActivities();
@@ -799,6 +800,7 @@ const tabFunds = document.getElementById('tab-funds');
 const tabAgenda = document.getElementById('tab-agenda');
 const tabLeaders = document.getElementById('tab-leaders');
 const tabOrgChart = document.getElementById('tab-orgchart');
+const tabResources = document.getElementById('tab-resources');
 const panelDashboard = document.getElementById('panel-dashboard');
 const panelActivities = document.getElementById('panel-activities');
 const panelMembers = document.getElementById('panel-members');
@@ -807,6 +809,7 @@ const panelFunds = document.getElementById('panel-funds');
 const panelAgenda = document.getElementById('panel-agenda');
 const panelLeaders = document.getElementById('panel-leaders');
 const panelOrgChart = document.getElementById('panel-orgchart');
+const panelResources = document.getElementById('panel-resources');
 
 // Header action buttons
 
@@ -843,6 +846,7 @@ function switchTab(tabName, subTabName = null) {
   panelAgenda?.classList.add('hidden');
   panelLeaders?.classList.add('hidden');
   panelOrgChart?.classList.add('hidden');
+  panelResources?.classList.add('hidden');
 
   tabDashboard?.classList.remove('active');
   tabActivities?.classList.remove('active');
@@ -852,6 +856,7 @@ function switchTab(tabName, subTabName = null) {
   tabAgenda?.classList.remove('active');
   tabLeaders?.classList.remove('active');
   tabOrgChart?.classList.remove('active');
+  tabResources?.classList.remove('active');
 
   document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
   document.querySelectorAll('.sidebar-sublink').forEach(link => link.classList.remove('active'));
@@ -929,6 +934,31 @@ function switchTab(tabName, subTabName = null) {
     tabOrgChart?.classList.add('active');
     panelOrgChart?.classList.remove('hidden');
     renderOrgChart();
+  } else if (tabName === 'resources') {
+    tabResources?.classList.add('active');
+    panelResources?.classList.remove('hidden');
+    
+    const resTitle = document.getElementById('resources-title');
+    const resSubtitle = document.getElementById('resources-subtitle');
+    if (resTitle && resSubtitle) {
+      if (subTabName === 'youthcamp') {
+        resTitle.innerHTML = '<i data-lucide="tent"></i> Youthcamp';
+        resSubtitle.textContent = 'Files and guidelines for Youthcamp';
+      } else if (subTabName === 'trainings') {
+        resTitle.innerHTML = '<i data-lucide="book-open"></i> Trainings';
+        resSubtitle.textContent = 'Training materials';
+      } else if (subTabName === 'songboard') {
+        resTitle.innerHTML = '<i data-lucide="music"></i> Songboard';
+        resSubtitle.textContent = 'Lyrics and chords';
+      } else if (subTabName === 'holy-rosary') {
+        resTitle.innerHTML = '<i data-lucide="heart"></i> Holy Rosary';
+        resSubtitle.textContent = 'Rosary guides and prayers';
+      } else {
+        resTitle.innerHTML = '<i data-lucide="folder-open"></i> Resources';
+        resSubtitle.textContent = 'Access learning materials and guidelines';
+      }
+      lucide.createIcons();
+    }
   }
   lucide.createIcons();
 }

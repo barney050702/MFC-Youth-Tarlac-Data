@@ -161,6 +161,26 @@
         <button class="sidebar-link" onclick="switchTab('orgchart')" id="sidebar-tab-orgchart">
           <i data-lucide="network"></i> Org Chart
         </button>
+        <div class="sidebar-item-group">
+          <button class="sidebar-link" onclick="toggleSubmenu('resources-submenu')" id="sidebar-tab-resources">
+            <i data-lucide="folder-open"></i> <span style="flex-grow: 1; text-align: left;">Resources</span>
+            <i data-lucide="chevron-down" id="resources-submenu-icon" style="width: 16px; height: 16px; transition: transform 0.2s;"></i>
+          </button>
+          <div class="sidebar-submenu hidden" id="resources-submenu">
+            <button class="sidebar-sublink" onclick="switchTab('resources', 'youthcamp');" id="sidebar-subtab-resources-youthcamp">
+              Youthcamp
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('resources', 'trainings');" id="sidebar-subtab-resources-trainings">
+              Trainings
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('resources', 'songboard');" id="sidebar-subtab-resources-songboard">
+              Songboard
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('resources', 'holy-rosary');" id="sidebar-subtab-resources-holy-rosary">
+              Holy Rosary
+            </button>
+          </div>
+        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -1116,6 +1136,21 @@
             </ul>
           </div>
         </main>
+      </section>
+    </div>
+
+    <!-- Resources Panel -->
+    <div id="panel-resources" class="hidden">
+      <section class="monthly-summary-section" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="section-header-row">
+          <h2 class="section-title"><i data-lucide="folder-open"></i> Resources</h2>
+          <span class="section-subtitle">Access learning materials and guidelines</span>
+        </div>
+        <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+          <h3>Resource Module Content Coming Soon</h3>
+          <p>Files for this category will be available here.</p>
+        </div>
       </section>
     </div>
 
