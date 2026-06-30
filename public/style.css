@@ -1,4 +1,4 @@
-﻿/* Global Variables & Reset */
+/* Global Variables & Reset */
 :root {
   --font-main: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   
@@ -309,7 +309,9 @@ body {
 /* General Utilities */
 .hidden {
   display: none !important;
+  pointer-events: none !important;
 }
+
 
 /* Tabs Navigation */
 .app-tabs {
