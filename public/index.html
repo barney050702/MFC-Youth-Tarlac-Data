@@ -132,8 +132,21 @@
     </div>
   </div>
 
+  <!-- Auth Loading Splash — shown while Firebase resolves auth state -->
+  <div id="auth-loading-screen" style="
+    position:fixed;inset:0;z-index:9999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
+    background:#0f172a;
+  ">
+    <img src="logo.png" alt="MFC Youth Logo" style="width:72px;height:72px;border-radius:50%;animation:pulse 1.5s ease-in-out infinite;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+      <div style="width:36px;height:36px;border:3px solid rgba(99,102,241,0.3);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <span style="color:rgba(255,255,255,0.4);font-size:0.8rem;letter-spacing:1px;">Checking session…</span>
+    </div>
+  </div>
+
   <!-- Welcome / Landing Screen -->
-  <div id="welcome-screen" class="welcome-container">
+  <div id="welcome-screen" class="welcome-container hidden">
     <div class="welcome-card">
       <div class="welcome-logo-area">
         <img src="logo.png" alt="MFC Youth Logo" class="welcome-logo">

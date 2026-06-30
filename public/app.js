@@ -4013,15 +4013,26 @@ document.getElementById('welcome-visitor-form').addEventListener('submit', (e) =
 });
 
 // Firebase Auth State Listener
-// Firebase Auth State Listener
 let currentUserRole = null;
 let currentUserChapter = null;
 
 firebase.auth().onAuthStateChanged(async (user) => {
+  // Hide auth loading splash once Firebase has resolved the session
+  const authLoadingScreen = document.getElementById('auth-loading-screen');
+  if (authLoadingScreen) {
+    authLoadingScreen.style.transition = 'opacity 0.3s';
+    authLoadingScreen.style.opacity = '0';
+    setTimeout(() => authLoadingScreen.remove(), 300);
+  }
+
   if (user) {
     isAdmin = true;
     localStorage.setItem('is_admin', 'true');
     localStorage.setItem('current_username', user.email);
+
+    // Hide welcome screen immediately — don't wait for Firestore role fetch
+    hideWelcomeScreen();
+    lucide.createIcons();
 
     if (db) {
       try {
@@ -4030,7 +4041,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
           const data = doc.data();
           currentUserRole = data.role;
           currentUserChapter = data.chapter;
-          
+
           if (currentUserRole === 'superadmin') {
             document.getElementById('sidebar-tab-accounts').style.display = 'flex';
           } else if (currentUserRole === 'chapterhead') {
@@ -4056,7 +4067,6 @@ firebase.auth().onAuthStateChanged(async (user) => {
     }
 
     updateRoleUI();
-    hideWelcomeScreen();
     lucide.createIcons();
   } else {
     isAdmin = false;
@@ -4064,6 +4074,8 @@ firebase.auth().onAuthStateChanged(async (user) => {
     currentUserChapter = null;
     localStorage.removeItem('is_admin');
     localStorage.removeItem('current_username');
+    // Show welcome/login screen (user is not authenticated)
+    document.getElementById('welcome-screen').classList.remove('hidden');
   }
 });
 
@@ -4085,8 +4097,13 @@ document.getElementById('welcome-admin-form').addEventListener('submit', async (
     welcomeError.classList.add('hidden');
     document.getElementById('welcome-passcode-field').value = '';
     document.getElementById('welcome-admin-email').value = '';
+    // Hide welcome screen immediately — onAuthStateChanged will handle role fetch
+    hideWelcomeScreen();
   } catch (err) {
-    welcomeError.textContent = err.message || 'Invalid email or password. Please try again.';
+    const msg = err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'
+      ? 'Invalid email or password. Please try again.'
+      : (err.message || 'Login failed. Please try again.');
+    welcomeError.textContent = msg;
     welcomeError.classList.remove('hidden');
     const inputField = document.getElementById('welcome-passcode-field');
     inputField.style.borderColor = 'var(--danger)';
