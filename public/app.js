@@ -791,6 +791,70 @@ class FundsDatabase {
 
 const dbFunds = new FundsDatabase();
 
+class ResourcesDatabase {
+  constructor() {
+    this.storageKey = 'resources_db_records_v1';
+    this.records = this.loadFromStorage();
+    if (db) this.setupFirebaseSync();
+  }
+  
+  setupFirebaseSync() {
+    db.collection('resources').onSnapshot(snapshot => {
+      let isFirstLoad = false;
+      if (snapshot.empty && this.records.length > 0) {
+        this.records.forEach(r => db.collection('resources').doc(r.id.toString()).set(r));
+        isFirstLoad = true;
+      }
+      
+      if (!isFirstLoad) {
+        const newData = [];
+        snapshot.forEach(doc => newData.push(doc.data()));
+        if (newData.length > 0 || snapshot.empty) {
+          this.records = newData;
+          this.saveToStorage();
+          if (typeof currentResourceCategory !== 'undefined') renderResources(currentResourceCategory);
+        }
+      }
+    });
+  }
+
+  loadFromStorage() {
+    const data = localStorage.getItem(this.storageKey);
+    return data ? JSON.parse(data) : [];
+  }
+
+  saveToStorage() {
+    localStorage.setItem(this.storageKey, JSON.stringify(this.records));
+  }
+
+  getAll() {
+    return this.records.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+
+  add(record) {
+    record.id = Date.now() + Math.floor(Math.random() * 1000);
+    record.date = new Date().toISOString();
+    this.records.push(record);
+    this.saveToStorage();
+    if (db) db.collection('resources').doc(record.id.toString()).set(record);
+    return record;
+  }
+
+  delete(id) {
+    const i = this.records.findIndex(r => r.id === parseInt(id));
+    if (i !== -1) {
+      this.records.splice(i, 1);
+      this.saveToStorage();
+      if (db) db.collection('resources').doc(id.toString()).delete();
+      return true;
+    }
+    return false;
+  }
+}
+
+const dbResources = new ResourcesDatabase();
+let currentResourceCategory = 'youthcamp';
+
 // Tab elements
 const tabDashboard = document.getElementById('tab-dashboard');
 const tabActivities = document.getElementById('tab-activities');
@@ -938,64 +1002,29 @@ function switchTab(tabName, subTabName = null) {
     tabResources?.classList.add('active');
     panelResources?.classList.remove('hidden');
     
+    currentResourceCategory = subTabName;
     const resTitle = document.getElementById('resources-title');
     const resSubtitle = document.getElementById('resources-subtitle');
-    const contentArea = document.getElementById('resources-content-area');
-    if (resTitle && resSubtitle && contentArea) {
+    if (resTitle && resSubtitle) {
       if (subTabName === 'youthcamp') {
         resTitle.innerHTML = '<i data-lucide="tent"></i> Youthcamp';
         resSubtitle.textContent = 'Files and guidelines for Youthcamp';
-        contentArea.innerHTML = `
-          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
-          <h3>Youthcamp Files Coming Soon</h3>
-          <p>No files uploaded for Youthcamp yet.</p>
-        `;
       } else if (subTabName === 'trainings') {
         resTitle.innerHTML = '<i data-lucide="book-open"></i> Trainings';
         resSubtitle.textContent = 'Training materials';
-        contentArea.innerHTML = `
-          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
-          <h3>Trainings Files Coming Soon</h3>
-          <p>No files uploaded for Trainings yet.</p>
-        `;
       } else if (subTabName === 'songboard') {
         resTitle.innerHTML = '<i data-lucide="music"></i> Songboard';
         resSubtitle.textContent = 'Lyrics and chords';
-        contentArea.innerHTML = `
-          <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1);">
-            <div style="display: flex; align-items: center; gap: 1rem; text-align: left;">
-              <div style="background: var(--primary); width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                <i data-lucide="file-presentation" style="color: white;"></i>
-              </div>
-              <div>
-                <h4 style="margin: 0; font-size: 1.1rem;">MFC Youth Songboard</h4>
-                <span style="font-size: 0.85rem; color: var(--text-dim);">PowerPoint Presentation (.pptx)</span>
-              </div>
-            </div>
-            <a href="resources/MFC Youth Songboard.pptx" download class="btn btn-primary" style="padding: 0.5rem 1rem;">
-              <i data-lucide="download"></i> Download
-            </a>
-          </div>
-        `;
       } else if (subTabName === 'holy-rosary') {
         resTitle.innerHTML = '<i data-lucide="heart"></i> Holy Rosary';
         resSubtitle.textContent = 'Rosary guides and prayers';
-        contentArea.innerHTML = `
-          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
-          <h3>Holy Rosary Files Coming Soon</h3>
-          <p>No files uploaded for Holy Rosary yet.</p>
-        `;
       } else {
         resTitle.innerHTML = '<i data-lucide="folder-open"></i> Resources';
         resSubtitle.textContent = 'Access learning materials and guidelines';
-        contentArea.innerHTML = `
-          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
-          <h3>Select a Resource Category</h3>
-          <p>Choose a category from the sidebar menu.</p>
-        `;
       }
       lucide.createIcons();
     }
+    renderResources(subTabName);
   }
   lucide.createIcons();
 }
@@ -4499,6 +4528,149 @@ if (btnRefreshHistory) {
     }, 500);
   });
 }
+
+// ==========================================
+// RESOURCES MODULE LOGIC
+// ==========================================
+
+const btnAddResource = document.getElementById('btn-add-resource');
+const resourceModal = document.getElementById('resource-upload-modal');
+const btnCloseResourceModal = document.getElementById('btn-close-resource-modal');
+const btnCancelResource = document.getElementById('btn-cancel-resource');
+const resourceForm = document.getElementById('resource-upload-form');
+const progressText = document.getElementById('resource-upload-progress');
+
+function openResourceModal() {
+  if (!currentResourceCategory) return;
+  resourceModal.classList.remove('hidden');
+  resourceForm.reset();
+  progressText.textContent = '';
+}
+
+function closeResourceModal() {
+  resourceModal.classList.add('hidden');
+  progressText.textContent = '';
+}
+
+if (btnAddResource) btnAddResource.addEventListener('click', openResourceModal);
+if (btnCloseResourceModal) btnCloseResourceModal.addEventListener('click', closeResourceModal);
+if (btnCancelResource) btnCancelResource.addEventListener('click', closeResourceModal);
+
+if (resourceForm) {
+  resourceForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fileInput = document.getElementById('field-resource-file');
+    const titleInput = document.getElementById('field-resource-title');
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    let title = titleInput.value.trim();
+    if (!title) title = file.name;
+
+    const btnSubmit = document.getElementById('btn-submit-resource');
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Uploading...';
+    progressText.textContent = 'Uploading to secure cloud storage...';
+    progressText.style.color = 'var(--primary)';
+
+    try {
+      const storageRef = firebase.storage().ref();
+      const fileRef = storageRef.child(`resources/${currentResourceCategory}/${Date.now()}_${file.name}`);
+      const uploadTask = await fileRef.put(file);
+      const downloadURL = await uploadTask.ref.getDownloadURL();
+
+      let iconType = 'file';
+      if (file.type.includes('pdf')) iconType = 'file-text';
+      if (file.type.includes('image')) iconType = 'image';
+      if (file.type.includes('presentation') || file.name.endsWith('.pptx')) iconType = 'file-presentation';
+      if (file.type.includes('word')) iconType = 'file-text';
+
+      dbResources.add({
+        title: title,
+        filename: file.name,
+        type: file.type,
+        icon: iconType,
+        url: downloadURL,
+        category: currentResourceCategory
+      });
+
+      closeResourceModal();
+      renderResources(currentResourceCategory);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      progressText.textContent = 'Upload failed. Please check your connection and try again.';
+      progressText.style.color = 'red';
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'Upload File';
+    }
+  });
+}
+
+function renderResources(category) {
+  const contentArea = document.getElementById('resources-content-area');
+  if (!contentArea) return;
+
+  if (!category) {
+    contentArea.innerHTML = `
+      <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+      <h3>Select a Resource Category</h3>
+      <p>Choose a category from the sidebar menu.</p>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  const files = dbResources.getAll().filter(r => r.category === category);
+
+  if (files.length === 0) {
+    if (category === 'songboard' && dbResources.getAll().length === 0) {
+       files.push({
+         title: 'MFC Youth Songboard',
+         filename: 'MFC Youth Songboard.pptx',
+         icon: 'file-presentation',
+         url: 'resources/MFC Youth Songboard.pptx'
+       });
+    } else {
+      contentArea.innerHTML = `
+        <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+        <h3>No Files Found</h3>
+        <p>There are currently no files uploaded for this category.</p>
+      `;
+      lucide.createIcons();
+      return;
+    }
+  }
+
+  contentArea.innerHTML = files.map(file => `
+    <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;">
+      <div style="display: flex; align-items: center; gap: 1rem; text-align: left; overflow: hidden;">
+        <div style="background: var(--primary); width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i data-lucide="${file.icon || 'file'}" style="color: white;"></i>
+        </div>
+        <div style="overflow: hidden;">
+          <h4 style="margin: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${file.title}">${file.title}</h4>
+          <span style="font-size: 0.85rem; color: var(--text-dim);">${file.filename}</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <a href="${file.url}" target="_blank" download class="btn btn-primary" style="padding: 0.5rem 1rem;">
+          <i data-lucide="download"></i> <span class="hide-mobile">Download</span>
+        </a>
+        ${isAdmin && file.id ? `<button class="btn btn-outline" style="padding: 0.5rem; border-color: rgba(255,0,0,0.3); color: #ff6b6b;" onclick="deleteResource(${file.id})" title="Delete"><i data-lucide="trash-2"></i></button>` : ''}
+      </div>
+    </div>
+  `).join('');
+  
+  lucide.createIcons();
+}
+
+window.deleteResource = function(id) {
+  if (confirm('Are you sure you want to delete this resource?')) {
+    dbResources.delete(id);
+    renderResources(currentResourceCategory);
+  }
+};
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
