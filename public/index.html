@@ -90,6 +90,48 @@
     </div>
   </div>
 
+  <!-- Create Account Modal -->
+  <div id="account-modal" class="modal-overlay hidden" style="z-index: 10000;">
+    <div class="modal-card" style="max-width: 450px;">
+      <div class="modal-header">
+        <h2>Create Account</h2>
+        <button id="btn-close-account-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="account-form">
+        <div class="form-group">
+          <label for="field-account-email">Email Address</label>
+          <input type="email" id="field-account-email" placeholder="admin@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="field-account-password">Password (minimum 6 characters)</label>
+          <input type="password" id="field-account-password" placeholder="******" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="field-account-role">Role</label>
+          <select id="field-account-role" required>
+            <option value="superadmin">Super Admin (Full Access)</option>
+            <option value="chapterhead">Chapter Head (Restricted Access)</option>
+          </select>
+        </div>
+        <div class="form-group hidden" id="group-account-chapter">
+          <label for="field-account-chapter">Chapter Area (For Chapter Heads)</label>
+          <select id="field-account-chapter">
+            <option value="Central">Central Chapter</option>
+            <option value="East">East Chapter</option>
+            <option value="North">North Chapter</option>
+            <option value="South">South Chapter</option>
+            <option value="West">West Chapter</option>
+          </select>
+        </div>
+        <p id="account-modal-error" class="error-msg hidden" style="margin-top: 0.5rem;"></p>
+        <div class="modal-footer" style="margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-account-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-submit-account" class="btn btn-primary">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Welcome / Landing Screen -->
   <div id="welcome-screen" class="welcome-container">
     <div class="welcome-card">
@@ -125,19 +167,19 @@
         <form id="welcome-admin-form" class="welcome-admin-form">
           <h3>Admin Authentication</h3>
           <div class="welcome-input-group" style="margin-bottom: 0.5rem;">
-            <i data-lucide="user" class="input-icon"></i>
-            <input type="text" id="welcome-admin-username" placeholder="Enter Username..." required>
+            <i data-lucide="mail" class="input-icon"></i>
+            <input type="email" id="welcome-admin-email" placeholder="Enter Email..." required>
           </div>
           <div class="welcome-input-group">
             <i data-lucide="key-round" class="input-icon"></i>
-            <input type="password" id="welcome-passcode-field" placeholder="Enter Admin Passcode..." required autocomplete="current-password">
+            <input type="password" id="welcome-passcode-field" placeholder="Enter Password..." required autocomplete="current-password">
           </div>
           <div style="text-align: right; margin-top: -0.5rem; margin-bottom: 1rem;">
-            <a href="#" id="btn-forgot-passcode-trigger" style="color: var(--primary); font-size: 0.85rem; text-decoration: none;">Forgot Passcode?</a>
+            <a href="#" id="btn-forgot-passcode-trigger" style="color: var(--primary); font-size: 0.85rem; text-decoration: none;">Forgot Password?</a>
           </div>
           <p id="welcome-auth-error" class="error-msg hidden"></p>
-          <button type="submit" class="btn btn-primary btn-lg welcome-submit-btn">
-            <i data-lucide="lock"></i> Unlock Admin Features
+          <button type="submit" class="btn btn-primary btn-lg welcome-submit-btn" id="welcome-login-btn">
+            <i data-lucide="lock"></i> Log In
           </button>
         </form>
       </div>
@@ -243,9 +285,17 @@
             </button>
             <button class="sidebar-sublink" onclick="switchTab('resources', 'holy-rosary');" id="sidebar-subtab-resources-holy-rosary">
               Holy Rosary
-            </button>
           </div>
         </div>
+        
+        <button class="sidebar-link" onclick="switchTab('accounts')" id="sidebar-tab-accounts" style="display: none;">
+          <i data-lucide="shield"></i> Account Management
+        </button>
+
+        <hr style="margin: 1rem 0; border: 0; border-top: 1px solid var(--border-color);" />
+        <button class="sidebar-link text-danger" id="btn-logout" style="color: var(--danger);">
+          <i data-lucide="log-out"></i> Log Out
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -1244,6 +1294,42 @@
       </div>
     </div>
 
+    <!-- Panel Accounts -->
+    <div id="panel-accounts" class="hidden">
+      <section class="monthly-summary-section" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="section-header-row">
+          <h2 class="section-title"><i data-lucide="shield"></i> Account Management</h2>
+          <span class="section-subtitle">Manage Super Admins and Chapter Heads</span>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <button id="btn-create-account" class="btn btn-primary"><i data-lucide="user-plus"></i> Create New Account</button>
+        </div>
+
+        <main class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Chapter Area</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+          <div id="no-accounts-message" class="empty-state hidden">
+            <i data-lucide="users" class="empty-icon"></i>
+            <h3>No Accounts Found</h3>
+            <p>Wait, this shouldn't happen.</p>
+          </div>
+        </main>
+      </section>
+    </div>
+
+
     <!-- Footer -->
     <footer class="app-footer-info">
       <p>Data is stored locally in your web browser. You can export/import backups at any time.</p>
@@ -1892,6 +1978,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

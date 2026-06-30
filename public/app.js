@@ -884,6 +884,7 @@ const panelAgenda = document.getElementById('panel-agenda');
 const panelLeaders = document.getElementById('panel-leaders');
 const panelOrgChart = document.getElementById('panel-orgchart');
 const panelResources = document.getElementById('panel-resources');
+const panelAccounts = document.getElementById('panel-accounts');
 
 // Header action buttons
 
@@ -921,6 +922,7 @@ function switchTab(tabName, subTabName = null) {
   panelLeaders?.classList.add('hidden');
   panelOrgChart?.classList.add('hidden');
   panelResources?.classList.add('hidden');
+  panelAccounts?.classList.add('hidden');
 
   tabDashboard?.classList.remove('active');
   tabActivities?.classList.remove('active');
@@ -931,6 +933,8 @@ function switchTab(tabName, subTabName = null) {
   tabLeaders?.classList.remove('active');
   tabOrgChart?.classList.remove('active');
   tabResources?.classList.remove('active');
+  const tabAccounts = document.getElementById('sidebar-tab-accounts');
+  if (tabAccounts) tabAccounts.classList.remove('active');
 
   document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
   document.querySelectorAll('.sidebar-sublink').forEach(link => link.classList.remove('active'));
@@ -1035,9 +1039,123 @@ function switchTab(tabName, subTabName = null) {
       lucide.createIcons();
     }
     renderResources(subTabName);
+  } else if (tabName === 'accounts') {
+    const tabAccounts = document.getElementById('sidebar-tab-accounts');
+    if (tabAccounts) tabAccounts.classList.add('active');
+    if (panelAccounts) panelAccounts.classList.remove('hidden');
+    renderAccounts();
   }
   lucide.createIcons();
 }
+
+// ==========================================
+// ACCOUNT MANAGEMENT (RBAC)
+// ==========================================
+const btnCreateAccount = document.getElementById('btn-create-account');
+const accountModal = document.getElementById('account-modal');
+const accountForm = document.getElementById('account-form');
+const btnCloseAccountModal = document.getElementById('btn-close-account-modal');
+const btnCancelAccountModal = document.getElementById('btn-cancel-account-modal');
+const roleSelect = document.getElementById('field-account-role');
+const chapterGroup = document.getElementById('group-account-chapter');
+const accountsTableBody = document.getElementById('accounts-table-body');
+const noAccountsMessage = document.getElementById('no-accounts-message');
+
+if (roleSelect) {
+  roleSelect.addEventListener('change', () => {
+    if (roleSelect.value === 'chapterhead') {
+      chapterGroup.classList.remove('hidden');
+    } else {
+      chapterGroup.classList.add('hidden');
+    }
+  });
+}
+
+if (btnCreateAccount) {
+  btnCreateAccount.addEventListener('click', () => {
+    accountForm.reset();
+    document.getElementById('account-modal-error').classList.add('hidden');
+    chapterGroup.classList.add('hidden');
+    accountModal.classList.remove('hidden');
+  });
+}
+if (btnCloseAccountModal) btnCloseAccountModal.addEventListener('click', () => accountModal.classList.add('hidden'));
+if (btnCancelAccountModal) btnCancelAccountModal.addEventListener('click', () => accountModal.classList.add('hidden'));
+
+if (accountForm) {
+  accountForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('field-account-email').value;
+    const password = document.getElementById('field-account-password').value;
+    const role = document.getElementById('field-account-role').value;
+    const chapter = document.getElementById('field-account-chapter').value;
+    const errObj = document.getElementById('account-modal-error');
+    const btn = document.getElementById('btn-submit-account');
+    
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+    
+    try {
+      const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
+      await secondaryApp.auth().createUserWithEmailAndPassword(email, password);
+      await secondaryApp.auth().signOut();
+      
+      // Save role in firestore
+      await db.collection('users').doc(email).set({
+        email: email,
+        role: role,
+        chapter: role === 'chapterhead' ? chapter : null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      accountModal.classList.add('hidden');
+      renderAccounts();
+    } catch (err) {
+      errObj.textContent = err.message;
+      errObj.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Create User';
+      // Clean up secondary app
+      firebase.app("Secondary").delete().catch(()=>console.log('Error deleting secondary app'));
+    }
+  });
+}
+
+function renderAccounts() {
+  if (!db || !accountsTableBody) return;
+  db.collection('users').get().then(snapshot => {
+    accountsTableBody.innerHTML = '';
+    if (snapshot.empty) {
+      if (noAccountsMessage) noAccountsMessage.classList.remove('hidden');
+    } else {
+      if (noAccountsMessage) noAccountsMessage.classList.add('hidden');
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${data.email}</strong></td>
+          <td><span class="badge ${data.role === 'superadmin' ? 'badge-status active' : 'badge-status pending'}">${data.role === 'superadmin' ? 'Super Admin' : 'Chapter Head'}</span></td>
+          <td>${data.chapter || '-'}</td>
+          <td>
+            <button class="btn-icon delete" onclick="deleteAccount('${data.email}')" title="Delete account">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </td>
+        `;
+        accountsTableBody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+  });
+}
+
+window.deleteAccount = async function(email) {
+  if (confirm(`Are you sure you want to delete the role for ${email}? (Note: This only deletes their access, not their Authentication account due to Firebase client limits).`)) {
+    await db.collection('users').doc(email).delete();
+    renderAccounts();
+  }
+};
 
 tabDashboard.addEventListener('click', () => switchTab('dashboard'));
 tabActivities.addEventListener('click', () => switchTab('activities'));
@@ -3831,15 +3949,16 @@ function updateRoleUI() {
     body.classList.remove('view-only');
     if (adminOnlyMenu) adminOnlyMenu.classList.remove('hidden');
     if (btnAuth) btnAuth.classList.add('hidden'); // Hide login button from menu
-    const currentName = localStorage.getItem('current_username') || 'MFC Youth Tarlac Moderator';
+    const currentEmail = localStorage.getItem('current_username') || 'admin@example.com';
+    const roleText = currentUserRole === 'chapterhead' ? `Chapter Head (${currentUserChapter || 'Assigned Chapter'})` : 'Super Admin';
     const welcomeBanner = document.getElementById('welcome-banner-title');
-    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentName} ! 👋`;
-    if (dropdownUserName) dropdownUserName.textContent = currentName;
-    if (dropdownUserEmail) dropdownUserEmail.textContent = 'Full Access Mode';
+    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentEmail}! 👋`;
+    if (dropdownUserName) dropdownUserName.textContent = currentEmail;
+    if (dropdownUserEmail) dropdownUserEmail.textContent = roleText;
     const sidebarUserName = document.getElementById('sidebar-user-name');
     const sidebarUserRole = document.getElementById('sidebar-user-role');
-    if (sidebarUserName) sidebarUserName.textContent = 'MFC Youth Tarlac Moderator';
-    if (sidebarUserRole) sidebarUserRole.textContent = 'Full Access Mode';
+    if (sidebarUserName) sidebarUserName.textContent = currentEmail.split('@')[0];
+    if (sidebarUserRole) sidebarUserRole.textContent = roleText;
     if (dropdownAvatar) {
       dropdownAvatar.innerHTML = '<i data-lucide="shield-check" style="width: 20px; height: 20px; color: white;"></i>';
       dropdownAvatar.style.background = '#4f46e5';
@@ -3969,25 +4088,79 @@ document.getElementById('welcome-visitor-form').addEventListener('submit', (e) =
   lucide.createIcons();
 });
 
-document.getElementById('welcome-admin-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const adminName = document.getElementById('welcome-admin-username').value;
-  const inputPasscode = document.getElementById('welcome-passcode-field').value;
-  const correctPasscode = localStorage.getItem('admin_passcode') || 'mfcyouthtarlac';
-  const welcomeError = document.getElementById('welcome-auth-error');
+// Firebase Auth State Listener
+// Firebase Auth State Listener
+let currentUserRole = null;
+let currentUserChapter = null;
 
-  if (adminName === 'mfcyouthtarlac' && inputPasscode === correctPasscode) {
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (user) {
     isAdmin = true;
     localStorage.setItem('is_admin', 'true');
-    localStorage.setItem('current_username', adminName || 'Admin');
-    welcomeError.classList.add('hidden');
-    document.getElementById('welcome-passcode-field').value = '';
-    document.getElementById('welcome-admin-username').value = '';
+    localStorage.setItem('current_username', user.email);
+
+    if (db) {
+      try {
+        const doc = await db.collection('users').doc(user.email).get();
+        if (doc.exists) {
+          const data = doc.data();
+          currentUserRole = data.role;
+          currentUserChapter = data.chapter;
+          
+          if (currentUserRole === 'superadmin') {
+            document.getElementById('sidebar-tab-accounts').style.display = 'flex';
+          } else if (currentUserRole === 'chapterhead') {
+            document.getElementById('sidebar-tab-accounts').style.display = 'none';
+            if (typeof memberChapterFilter !== 'undefined') {
+              memberChapterFilter.value = currentUserChapter;
+              memberChapterFilter.disabled = true;
+              currentMemberFilters.chapter = currentUserChapter;
+            }
+            if (typeof chapterFilter !== 'undefined') {
+              chapterFilter.value = currentUserChapter;
+              chapterFilter.disabled = true;
+              currentActivityFilters.chapter = currentUserChapter;
+            }
+          }
+        } else {
+          currentUserRole = 'superadmin';
+          document.getElementById('sidebar-tab-accounts').style.display = 'flex';
+        }
+      } catch (err) {
+        console.error('Error fetching user role', err);
+      }
+    }
+
     updateRoleUI();
     hideWelcomeScreen();
     lucide.createIcons();
   } else {
-    welcomeError.textContent = 'Invalid admin username or passcode. Please try again.';
+    isAdmin = false;
+    currentUserRole = null;
+    currentUserChapter = null;
+    localStorage.removeItem('is_admin');
+    localStorage.removeItem('current_username');
+  }
+});
+
+document.getElementById('welcome-admin-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('welcome-admin-email').value;
+  const password = document.getElementById('welcome-passcode-field').value;
+  const welcomeError = document.getElementById('welcome-auth-error');
+  const btn = document.getElementById('welcome-login-btn');
+  const ogText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader" class="rotating"></i> Logging in...';
+  lucide.createIcons();
+
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+    welcomeError.classList.add('hidden');
+    document.getElementById('welcome-passcode-field').value = '';
+    document.getElementById('welcome-admin-email').value = '';
+  } catch (err) {
+    welcomeError.textContent = err.message || 'Invalid email or password. Please try again.';
     welcomeError.classList.remove('hidden');
     const inputField = document.getElementById('welcome-passcode-field');
     inputField.style.borderColor = 'var(--danger)';
@@ -3996,8 +4169,20 @@ document.getElementById('welcome-admin-form').addEventListener('submit', (e) => 
       inputField.style.borderColor = '';
       inputField.style.boxShadow = '';
     }, 1500);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = ogText;
+    lucide.createIcons();
   }
 });
+
+const btnLogout = document.getElementById('btn-logout');
+if (btnLogout) {
+  btnLogout.addEventListener('click', async () => {
+    await firebase.auth().signOut();
+    location.reload();
+  });
+}
 
 // Passcode Modal Triggers
 document.getElementById('btn-change-passcode-trigger').addEventListener('click', () => {
