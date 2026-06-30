@@ -4891,6 +4891,41 @@ if (forgotForm) {
   });
 }
 
+// ==========================================
+// THEME (DARK/LIGHT MODE) LOGIC
+// ==========================================
+
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeToggleIcon = document.getElementById('theme-toggle-icon');
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('app-theme', theme);
+  
+  if (themeToggleIcon) {
+    if (theme === 'dark') {
+      themeToggleIcon.setAttribute('data-lucide', 'sun');
+    } else {
+      themeToggleIcon.setAttribute('data-lucide', 'moon');
+    }
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+}
+
+// Initialize theme on load
+const savedTheme = localStorage.getItem('app-theme') || 'dark'; // Default to dark since CSS default is dark
+applyTheme(savedTheme);
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+  });
+}
+
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

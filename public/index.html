@@ -270,6 +270,10 @@
             <i data-lucide="globe"></i>
             <span class="custom-tooltip">Navigate to MFC Youth Web...</span>
           </a>
+          <button id="theme-toggle-btn" class="web-link-icon" style="background: none; border: none; cursor: pointer; color: var(--primary); padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="moon" id="theme-toggle-icon"></i>
+            <span class="custom-tooltip">Toggle Dark Mode</span>
+          </button>
           <div class="profile-dropdown-container">
             <div class="profile-trigger" id="profile-trigger" onclick="document.getElementById('profile-dropdown-menu').classList.toggle('active'); event.stopPropagation();" style="padding: 0.5rem; border-radius: 8px; margin: 0;">
               <i data-lucide="user" style="width: 24px; height: 24px;"></i>
@@ -1874,6 +1878,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
