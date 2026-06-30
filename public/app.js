@@ -4545,6 +4545,13 @@ function openResourceModal() {
   resourceModal.classList.remove('hidden');
   resourceForm.reset();
   progressText.textContent = '';
+  if (resourceFileName) {
+    resourceFileName.textContent = '';
+    resourceFileName.style.display = 'none';
+  }
+  if (resourceUploadBox) {
+    resourceUploadBox.style.background = '#e5e7eb';
+  }
 }
 
 function closeResourceModal() {
@@ -4555,6 +4562,24 @@ function closeResourceModal() {
 if (btnAddResource) btnAddResource.addEventListener('click', openResourceModal);
 if (btnCloseResourceModal) btnCloseResourceModal.addEventListener('click', closeResourceModal);
 if (btnCancelResource) btnCancelResource.addEventListener('click', closeResourceModal);
+
+const resourceFileInput = document.getElementById('field-resource-file');
+const resourceFileName = document.getElementById('resource-file-name');
+const resourceUploadBox = document.getElementById('resource-upload-box');
+
+if (resourceFileInput) {
+  resourceFileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      resourceFileName.textContent = e.target.files[0].name;
+      resourceFileName.style.display = 'block';
+      resourceUploadBox.style.background = '#d1d5db'; // slightly darker to show selection
+    } else {
+      resourceFileName.textContent = '';
+      resourceFileName.style.display = 'none';
+      resourceUploadBox.style.background = '#e5e7eb';
+    }
+  });
+}
 
 if (resourceForm) {
   resourceForm.addEventListener('submit', async (e) => {
