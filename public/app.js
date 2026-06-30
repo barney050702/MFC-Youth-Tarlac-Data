@@ -4327,7 +4327,8 @@ function renderOrgChart() {
   // Area-level positions (no chapter filter needed)
   renderList(containerAreaYouth, 'area youth');
   renderList(containerAreaLit, 'area lit');
-  if (containerMissionVol) renderList(containerMissionVol, 'mission volunteer');
+  // NOTE: Mission Volunteer is a free-text editable field — do NOT overwrite it here
+  // Its value is saved to localStorage and restored below
 
   // Chapter-level positions — regions stored as UPPERCASE in chapter_area field
   const regions = ['EAST', 'NORTH', 'WEST', 'SOUTH', 'CENTRAL'];
@@ -4428,9 +4429,33 @@ window.saveCustomTitle = function (id, text) {
 const mvNameEl = document.getElementById('mv-custom-name');
 if (mvNameEl) {
   const savedName = localStorage.getItem('title-mv-name');
-  if (savedName) {
+  if (savedName && savedName.trim()) {
     mvNameEl.innerText = savedName;
   }
+  // Restore after every renderOrgChart call (since it may re-run)
+  const _origRenderOrgChart = renderOrgChart;
+  window.renderOrgChart = function () {
+    _origRenderOrgChart();
+    const saved = localStorage.getItem('title-mv-name');
+    if (saved && saved.trim()) {
+      mvNameEl.innerText = saved;
+    } else {
+      mvNameEl.innerText = 'Vacant';
+    }
+  };
+
+  // Make it clear the field is editable
+  mvNameEl.setAttribute('placeholder', 'Click to enter name...');
+  mvNameEl.addEventListener('focus', () => {
+    if (mvNameEl.innerText.trim() === 'Vacant') mvNameEl.innerText = '';
+    mvNameEl.style.borderBottom = '2px solid var(--primary)';
+  });
+  mvNameEl.addEventListener('blur', () => {
+    const val = mvNameEl.innerText.trim();
+    if (!val) mvNameEl.innerText = 'Vacant';
+    localStorage.setItem('title-mv-name', mvNameEl.innerText.trim());
+    mvNameEl.style.borderBottom = '1px dashed rgba(255,255,255,0.3)';
+  });
 }
 
 // Initialize today's date in the header
