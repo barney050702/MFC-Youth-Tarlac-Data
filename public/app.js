@@ -4948,6 +4948,8 @@ if (forgotForm) {
       btnSubmit.textContent = 'Send Recovery Email';
       btnSubmit.disabled = false;
     }
+  });
+}
 // ==========================================
 // BULK IMPORT & EXPORT (CSV/JSON)
 // ==========================================
