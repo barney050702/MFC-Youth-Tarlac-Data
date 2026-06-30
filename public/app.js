@@ -1507,7 +1507,7 @@ function renderUpcomingActivities() {
     const d = new Date(rawDate);
     if (isNaN(d)) return false;
     d.setHours(0, 0, 0, 0);
-    return d.getTime() > today.getTime() && act.status !== 'Cancelled';
+    return d.getTime() >= today.getTime() && act.status !== 'Cancelled' && act.status !== 'Accomplished';
   });
 
   upcomingActivities.sort((a, b) => {
@@ -4518,13 +4518,16 @@ function toggleSubmenu(submenuId) {
   }
 }
 
-document.addEventListener('click', (e) => {
-  const trigger = e.target.closest('#main-menu-trigger');
-  if (trigger) {
-    e.stopPropagation();
-    openSidebar();
+// Direct button listener — more reliable than document delegation
+(function() {
+  const menuBtn = document.getElementById('main-menu-trigger');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openSidebar();
+    });
   }
-});
+})();
 
 const sidebarOverlay = document.getElementById('sidebar-overlay');
 if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
