@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0f19">
+  <title>MFC YOUTH TARLAC DATA</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Cropper.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <!-- SheetJS (xlsx) for Excel import support -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Welcome / Landing Screen -->
+  <div id="welcome-screen" class="welcome-container">
+    <div class="welcome-card">
+      <div class="welcome-logo-area">
+        <img src="logo.png" alt="MFC Youth Logo" class="welcome-logo">
+      </div>
+      <h1 class="welcome-title">MFC YOUTH TARLAC DATA</h1>
+      <p class="welcome-subtitle">Make all youth know Christ</p>
+
+      
+      <div class="welcome-actions">
+        <!-- Visitor Login Form -->
+        <form id="welcome-visitor-form" class="welcome-admin-form">
+          <div class="welcome-input-group" style="margin-bottom: 0.5rem;">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" id="welcome-visitor-firstname" placeholder="Enter First Name..." required autofocus>
+          </div>
+          <div class="welcome-input-group" style="margin-bottom: 0.5rem;">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" id="welcome-visitor-lastname" placeholder="Enter Last Name..." required>
+          </div>
+          <p id="welcome-visitor-error" class="error-msg hidden" style="margin-bottom: 0.5rem;"></p>
+          <button type="submit" class="btn btn-visitor btn-lg" style="width: 100%;">
+            <i data-lucide="eye"></i> Enter as Visitor (View Only)
+          </button>
+        </form>
+        
+        <div class="welcome-divider">
+          <span>OR</span>
+        </div>
+        
+        <!-- Integrated Admin Login Form -->
+        <form id="welcome-admin-form" class="welcome-admin-form">
+          <h3>Admin Authentication</h3>
+          <div class="welcome-input-group" style="margin-bottom: 0.5rem;">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" id="welcome-admin-username" placeholder="Enter Username..." required>
+          </div>
+          <div class="welcome-input-group">
+            <i data-lucide="key-round" class="input-icon"></i>
+            <input type="password" id="welcome-passcode-field" placeholder="Enter Admin Passcode..." required autocomplete="current-password">
+          </div>
+          <p id="welcome-auth-error" class="error-msg hidden"></p>
+          <button type="submit" class="btn btn-primary btn-lg welcome-submit-btn">
+            <i data-lucide="lock"></i> Unlock Admin Features
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container hidden">
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar Drawer -->
+    <aside id="sidebar-drawer" class="sidebar-drawer">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="logo.png" alt="MFC Youth Logo">
+          <div>
+            <h2>MFC Youth Tarlac</h2>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">
+          <img src="logo.png" alt="Profile Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+        </div>
+        <h3 id="sidebar-user-name">Guest</h3>
+        <p id="sidebar-user-role">View-Only Access</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="sidebar-link active" onclick="switchTab('dashboard')" id="sidebar-tab-dashboard">
+          <i data-lucide="home"></i> Home
+        </button>
+        <div class="sidebar-item-group">
+          <button class="sidebar-link" onclick="toggleSubmenu('activities-submenu')" id="sidebar-tab-activities">
+            <i data-lucide="book"></i> <span style="flex-grow: 1; text-align: left;">Activity Records</span>
+            <i data-lucide="chevron-down" id="activities-submenu-icon" style="width: 16px; height: 16px; transition: transform 0.2s;"></i>
+          </button>
+          <div class="sidebar-submenu hidden" id="activities-submenu">
+            <button class="sidebar-sublink" onclick="switchTab('activities', 'first-semester');" id="sidebar-subtab-activities-first-semester">
+              First Semester (Jan - Jun)
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('activities', 'second-semester');" id="sidebar-subtab-activities-second-semester">
+              Second Semester (Jul - Dec)
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('activities', 'covenanted');" id="sidebar-subtab-activities-covenanted">
+              Covenanted
+            </button>
+          </div>
+        </div>
+        <div class="sidebar-item-group">
+          <button class="sidebar-link" onclick="toggleSubmenu('members-submenu')" id="sidebar-tab-members">
+            <i data-lucide="users"></i> <span style="flex-grow: 1; text-align: left;">Members</span>
+            <i data-lucide="chevron-down" id="members-submenu-icon" style="width: 16px; height: 16px; transition: transform 0.2s;"></i>
+          </button>
+          <div class="sidebar-submenu hidden" id="members-submenu">
+            <button class="sidebar-sublink" onclick="switchTab('members', 'central');" id="sidebar-subtab-members-central">
+              Central Chapter
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('members', 'east');" id="sidebar-subtab-members-east">
+              East Chapter
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('members', 'north');" id="sidebar-subtab-members-north">
+              North Chapter
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('members', 'south');" id="sidebar-subtab-members-south">
+              South Chapter
+            </button>
+            <button class="sidebar-sublink" onclick="switchTab('members', 'west');" id="sidebar-subtab-members-west">
+              West Chapter
+            </button>
+          </div>
+        </div>
+        <button class="sidebar-link" onclick="switchTab('attendance')" id="sidebar-tab-attendance">
+          <i data-lucide="check-square"></i> Attendance Records
+        </button>
+        <button class="sidebar-link" onclick="switchTab('funds')" id="sidebar-tab-funds">
+          <i data-lucide="wallet"></i> Funds & Expenses
+        </button>
+        <button class="sidebar-link" onclick="switchTab('agenda')" id="sidebar-tab-agenda">
+          <i data-lucide="list-checks"></i> Agenda
+        </button>
+        <button class="sidebar-link" onclick="switchTab('leaders')" id="sidebar-tab-leaders">
+          <i data-lucide="users-2"></i> Servant Leaders
+        </button>
+        <button class="sidebar-link" onclick="switchTab('orgchart')" id="sidebar-tab-orgchart">
+          <i data-lucide="network"></i> Org Chart
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span>@2026 Copyright</span>
+        <span>version 1.0.0</span>
+      </div>
+    </aside>
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="header-nav-icons">
+          <i data-lucide="menu" id="main-menu-trigger"></i>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--primary); margin-right: 1rem;">
+          <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" class="web-link-icon" aria-label="Navigate to Facebook Page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook" style="color: var(--primary);"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            <span class="custom-tooltip">Navigate to Facebook Page...</span>
+          </a>
+          <a href="https://mfcyouth.org/" target="_blank" class="web-link-icon" aria-label="Navigate to MFC Youth Web">
+            <i data-lucide="globe"></i>
+            <span class="custom-tooltip">Navigate to MFC Youth Web...</span>
+          </a>
+          <div class="profile-dropdown-container">
+            <div class="profile-trigger" id="profile-trigger" onclick="document.getElementById('profile-dropdown-menu').classList.toggle('active'); event.stopPropagation();" style="padding: 0.5rem; border-radius: 8px; margin: 0;">
+              <i data-lucide="user" style="width: 24px; height: 24px;"></i>
+            </div>
+            
+            <div class="profile-dropdown-menu" id="profile-dropdown-menu">
+              <div class="dropdown-header">
+                <div class="dropdown-avatar" id="dropdown-avatar">
+                  <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+                </div>
+                <div class="dropdown-user-info">
+                  <span class="dropdown-user-name" id="dropdown-user-name">Guest User</span>
+                  <span class="dropdown-user-email" id="dropdown-user-email">View-Only Mode</span>
+                </div>
+              </div>
+              
+              <div class="dropdown-body">
+                <button class="dropdown-item" id="btn-admin-auth">
+                  <i data-lucide="log-in"></i> <span>Admin Login</span>
+                </button>
+                
+                <div class="admin-only-menu hidden" id="admin-only-menu">
+                  <div class="dropdown-divider"></div>
+                  <button class="dropdown-item" id="btn-change-passcode-trigger">
+                    <i data-lucide="key-round"></i> <span>Change Passcode</span>
+                  </button>
+
+                  <div class="dropdown-divider"></div>
+                  <button class="dropdown-item" id="btn-recovery-options-trigger">
+                    <i data-lucide="user-cog"></i> <span>Change Account Recovery Options</span>
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button class="dropdown-item" id="btn-dropdown-logout" style="color: #f87171;">
+                    <i data-lucide="log-out" style="color: #f87171;"></i> <span>Log Out</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div style="width: 1px; height: 28px; background-color: rgba(255,255,255,0.15);"></div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <img src="logo.png" alt="MFC Youth Logo" style="height: 32px; width: 32px; object-fit: cover; border-radius: 50%; background-color: transparent;">
+            <h1 style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0; white-space: nowrap;">MFC YOUTH TARLAC PORTAL</h1>
+          </div>
+        </div>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <nav class="app-tabs hidden">
+      <button id="tab-dashboard" class="tab-btn active">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+      </button>
+      <button id="tab-activities" class="tab-btn">
+        <i data-lucide="calendar"></i> Activity Records
+      </button>
+      <button id="tab-members" class="tab-btn">
+        <i data-lucide="users"></i> Members
+      </button>
+      <button id="tab-attendance" class="tab-btn">
+        <i data-lucide="check-square"></i> Attendance Records
+      </button>
+      <button id="tab-funds" class="tab-btn">
+        <i data-lucide="wallet"></i> Funds &amp; Expenses
+      </button>
+      <button id="tab-agenda" class="tab-btn">
+        <i data-lucide="list-checks"></i> Agenda
+      </button>
+      <button id="tab-leaders" class="tab-btn">
+        <i data-lucide="users-2"></i> Servant Leaders
+      </button>
+      <button id="tab-orgchart" class="tab-btn">
+        <i data-lucide="network"></i> Org Chart
+      </button>
+    </nav>
+
+    <!-- Panel Dashboard -->
+    <div id="panel-dashboard">
+      <!-- Welcome Banner -->
+      <section class="welcome-banner" id="welcome-banner">
+        <div class="welcome-banner-content">
+          <h2 id="welcome-banner-title">Hello, Barney Reyes ! 👋</h2>
+          <p>Welcome to your centralized hub. Access your academic information, services, and resources in real-time.</p>
+        </div>
+      </section>
+
+      <!-- Stats Dashboard -->
+      <section class="dashboard-stats" id="dashboard-stats-container">
+        <div class="stat-card">
+          <div class="stat-icon purple"><i data-lucide="calendar"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-total">0</h3>
+            <p>Total Activities</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i data-lucide="check-circle-2"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-accomplished">0</h3>
+            <p>Accomplished</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i data-lucide="users"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-members">0</h3>
+            <p>Total Members</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green" style="background: rgba(16, 185, 129, 0.1);"><i data-lucide="user-check"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-active-members" style="color: #10b981;">0</h3>
+            <p>Total Active</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red" style="background: rgba(239, 68, 68, 0.1);"><i data-lucide="user-x"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-inactive-members" style="color: #ef4444;">0</h3>
+            <p>Total Inactive</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange" style="background: rgba(245, 158, 11, 0.1);"><i data-lucide="clock"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-pending" style="color: #f59e0b;">0</h3>
+            <p>Pending</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i data-lucide="x-circle"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-cancelled">0</h3>
+            <p>Cancelled / Postponed</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Today's Schedule Widget -->
+      <section class="today-schedule-widget">
+        <div class="widget-header">
+          <h2><i data-lucide="calendar-clock"></i> Your Scheduled Activity Today</h2>
+        </div>
+        <div class="widget-content" id="today-activity-content">
+          <div class="empty-state">
+            <i data-lucide="calendar-off" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+            <p>No activities scheduled for today</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming Activities Widget -->
+      <section class="today-schedule-widget">
+        <div class="widget-header">
+          <h2><i data-lucide="calendar-range"></i> Upcoming Activities</h2>
+        </div>
+        <div class="widget-content" id="upcoming-activity-content">
+          <div class="empty-state">
+            <i data-lucide="calendar-x" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+            <p>No upcoming activities scheduled</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity Status Chart Widget -->
+      <section class="dashboard-chart-widget">
+        <div class="widget-header">
+          <h2>ACTIVITY STATUS OVERVIEW</h2>
+        </div>
+        <div class="widget-content chart-widget-content">
+          <div class="chart-container">
+            <canvas id="activityStatusChart"></canvas>
+          </div>
+          
+          <div class="chart-legend" id="activityStatusLegend">
+            <!-- Legend items will be injected here via JS -->
+          </div>
+
+          <div class="chart-summary-table-container">
+            <table class="chart-summary-table" id="activityStatusTable">
+              <thead>
+                <tr>
+                  <th>Total Activities</th>
+                  <th id="chart-total-count" class="text-right">0</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table rows will be injected here via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Panel Activities -->
+    <div id="panel-activities" class="hidden">
+      
+      <div class="page-banner">
+        <h2 class="page-banner-title" id="activities-banner-title">Accomplished Activities</h2>
+        <p class="page-banner-subtitle" id="activities-banner-subtitle">View the complete history of your accomplished activities and access related documents.</p>
+      </div>
+
+
+      
+      <div class="page-actions-right">
+        <button class="btn btn-outline btn-refresh-history" id="btn-refresh-history">
+          <i data-lucide="refresh-cw"></i> REFRESH HISTORY
+        </button>
+      </div>
+
+
+    <!-- Controls Panel (Filters & Import/Export) -->
+    <section class="controls-panel" style="display: none;">
+      <div class="filters-group">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="filter-search" placeholder="Search activity or venue...">
+        </div>
+        
+        <div class="select-wrapper">
+          <select id="filter-month">
+            <option value="">All Months</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <select id="filter-chapter">
+            <option value="">All Chapters/Areas</option>
+            <option value="AREA">AREA</option>
+            <option value="EAST">EAST</option>
+            <option value="WEST">WEST</option>
+            <option value="NORTH">NORTH</option>
+            <option value="SOUTH">SOUTH</option>
+            <option value="LIT">LIT</option>
+            <option value="UPPER CORE">UPPER CORE</option>
+            <option value="TRAINING">TRAINING</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper" style="display: none;">
+          <select id="filter-status">
+            <option value="">All Statuses</option>
+            <option value="Accomplished">Accomplished</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Rescheduled">Rescheduled</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+
+        <button id="btn-refresh-data" class="btn btn-secondary" title="Refresh Data">
+          <i data-lucide="refresh-cw"></i>
+        </button>
+      </div>
+
+      <div class="database-actions">
+
+        <button id="btn-export-csv" class="btn btn-outline" title="Export as PDF">
+          <i data-lucide="file-text"></i> Export PDF
+        </button>
+        <button id="btn-export-json" class="btn btn-outline" title="Backup database as JSON file">
+          <i data-lucide="download"></i> Backup DB
+        </button>
+        <button id="btn-import-trigger" class="btn btn-outline admin-only" title="Import data from CSV or JSON">
+          <i data-lucide="upload"></i> Import Data
+        </button>
+        <input type="file" id="file-import-input" accept=".xlsx,.xls,.json" style="display: none;">
+      </div>
+    </section>
+
+    <!-- Data Table Container -->
+    <!-- Cards Container -->
+    <div id="activities-cards-container" class="activities-cards-container">
+      <!-- Cards will be dynamically loaded here by app.js -->
+    </div>
+    <div id="no-records-message" class="empty-state hidden">
+      <i data-lucide="folder-open" class="empty-icon"></i>
+      <h3>No activities match your filters</h3>
+      <p>Try refining your search terms or filters above, or add a new activity.</p>
+    </div>
+    </div> <!-- End panel-activities -->
+
+    <!-- Panel Members -->
+    <div id="panel-members" class="hidden">
+      <!-- Members Stats Dashboard -->
+      <section class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-icon purple"><i data-lucide="users"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-members-total">0</h3>
+            <p>Total Members</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i data-lucide="user-check"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-members-active">0</h3>
+            <p>Active Members</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i data-lucide="shield"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-members-leaders">0</h3>
+            <p>Servants / Leaders</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i data-lucide="user-x"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-members-inactive">0</h3>
+            <p>Inactive Members</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Members Controls Panel -->
+      <section class="controls-panel">
+        <div class="filters-group">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="filter-member-search" placeholder="Search name, email, or role...">
+          </div>
+          
+          <div class="select-wrapper hidden">
+            <select id="filter-member-chapter">
+              <option value="">All Chapters/Areas</option>
+              <option value="CENTRAL">CENTRAL</option>
+              <option value="AREA">AREA</option>
+              <option value="EAST">EAST</option>
+              <option value="WEST">WEST</option>
+              <option value="NORTH">NORTH</option>
+              <option value="SOUTH">SOUTH</option>
+              <option value="LIT">LIT</option>
+              <option value="UPPER CORE">UPPER CORE</option>
+              <option value="TRAINING">TRAINING</option>
+            </select>
+          </div>
+
+          <div class="select-wrapper">
+            <select id="filter-member-status">
+              <option value="">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <button id="btn-add-member" class="btn btn-primary admin-only hidden">
+            <i data-lucide="plus"></i> Add New Member
+          </button>
+        </div>
+
+        <div class="database-actions">
+          <button id="btn-export-member-csv" class="btn btn-outline" title="Export Members as PDF">
+            <i data-lucide="file-text"></i> Export PDF
+          </button>
+          <button id="btn-export-member-json" class="btn btn-outline" title="Backup Members DB as JSON">
+            <i data-lucide="download"></i> Backup DB
+          </button>
+          <button id="btn-import-member-trigger" class="btn btn-outline admin-only" title="Import Members Data">
+            <i data-lucide="upload"></i> Import Data
+          </button>
+          <input type="file" id="file-import-member-input" accept=".json,.csv" style="display: none;">
+        </div>
+      </section>
+
+      <!-- Members Table Container -->
+      <!-- Top scroll mirror -->
+      <div id="members-top-scroll" style="overflow-x:auto;overflow-y:hidden;height:12px;margin-bottom:2px;">
+        <div id="members-top-scroll-inner" style="height:1px;"></div>
+      </div>
+      <main class="table-container" id="members-table-container">
+        <table class="activities-table" id="members-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Chapter / Area</th>
+              <th>Role / Designation</th>
+              <th>Contact Number</th>
+              <th>Email Address</th>
+              <th>Birthdate</th>
+              <th>Parents Contact</th>
+              <th>Date of Youth Camp</th>
+              <th>Youth Camp Title</th>
+              <th>Covenanted Date</th>
+              <th>Activities Attended</th>
+              <th>Status</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="member-table-body">
+            <!-- Rows dynamically loaded by app.js -->
+          </tbody>
+        </table>
+        <div id="no-members-message" class="empty-state hidden">
+          <i data-lucide="users-2" class="empty-icon"></i>
+          <h3>No members match your filters</h3>
+          <p>Try refining your search terms or filters above, or add a new member.</p>
+        </div>
+      </main>
+    </div> <!-- End panel-members -->
+
+    <!-- Panel Funds & Expenses -->
+    <div id="panel-funds" class="hidden">
+      <section class="dashboard-stats">
+        <div class="stat-card">
+          <div class="stat-icon green"><i data-lucide="trending-up"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-funds-income">₱0</h3>
+            <p>Total Income</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i data-lucide="trending-down"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-funds-expenses">₱0</h3>
+            <p>Total Expenses</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><i data-lucide="piggy-bank"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-funds-balance">₱0</h3>
+            <p>Current Balance</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue"><i data-lucide="receipt"></i></div>
+          <div class="stat-info">
+            <h3 id="stat-funds-count">0</h3>
+            <p>Total Records</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls-panel">
+        <div class="filters-group">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="filter-funds-search" placeholder="Search description or category...">
+          </div>
+          <div class="select-wrapper">
+            <select id="filter-funds-type">
+              <option value="">All Types</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+          </div>
+          <button id="btn-clear-funds-filters" class="btn btn-secondary" title="Clear Filters">
+            <i data-lucide="rotate-ccw"></i>
+          </button>
+        </div>
+        <div class="database-actions">
+          <button id="btn-add-fund" class="btn btn-primary admin-only hidden">
+            <i data-lucide="plus"></i> Add Record
+          </button>
+        </div>
+      </section>
+
+      <main class="table-container">
+        <table class="activities-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Amount</th>
+    <!-- Receipt View Modal -->
+    <div id="receipt-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Receipt Image</h2>
+          <button id="btn-close-receipt-modal" class="btn-close"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body" style="text-align:center;">
+          <img id="receipt-full-img" src="" alt="Receipt" style="max-width:100%;max-height:80vh;border-radius:8px;"/>
+        </div>
+      </div>
+    </div>
+              <th>Receipt</th>
+              <th class="actions-col admin-only">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="funds-table-body">
+            <!-- Dynamically loaded -->
+          </tbody>
+        </table>
+        <div id="no-funds-message" class="empty-state hidden">
+          <i data-lucide="wallet" class="empty-icon"></i>
+          <h3>No records found</h3>
+          <p>Add income or expense entries to track your funds.</p>
+        </div>
+      </main>
+    </div> <!-- End panel-funds -->
+
+    <!-- Panel Agenda -->
+    <div id="panel-agenda" class="hidden">
+      <!-- Full Upcoming Agenda List -->
+      <section class="agenda-section" id="full-agenda-section" style="margin-top:0;">
+        <div class="agenda-header">
+          <div class="agenda-title-group">
+            <i data-lucide="list-checks" class="agenda-bell-icon"></i>
+            <h2>Upcoming Agenda</h2>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <button class="btn btn-primary btn-small hidden" id="btn-agenda-add-activity" style="padding:0.35rem 0.85rem;font-size:0.78rem;">
+              <i data-lucide="plus"></i> Add
+            </button>
+            <span class="agenda-count-badge" id="full-agenda-count">0 Activities</span>
+            <button class="btn btn-secondary btn-small" id="btn-toggle-full-agenda" style="padding:0.35rem 0.85rem;font-size:0.78rem;">Show All</button>
+          </div>
+        </div>
+        <div class="full-agenda-list" id="full-agenda-list">
+          <!-- Rendered by app.js -->
+        </div>
+      </section>
+
+      <!-- Late Agenda List -->
+      <section class="agenda-section" id="late-agenda-section" style="display:none;">
+        <div class="agenda-header">
+          <div class="agenda-title-group">
+            <i data-lucide="alert-triangle" class="agenda-bell-icon" style="color:#f87171;"></i>
+            <h2 style="color:#f87171;">Late Activities</h2>
+          </div>
+          <span class="agenda-count-badge" id="late-agenda-count" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);">0 Activities</span>
+        </div>
+        <div class="full-agenda-list" id="late-agenda-list"></div>
+      </section>
+
+      <!-- Accomplished Agenda List -->
+      <section class="agenda-section" id="accomplished-agenda-section" style="display:none;">
+        <div class="agenda-header">
+          <div class="agenda-title-group">
+            <i data-lucide="check-circle" class="agenda-bell-icon" style="color:#10b981;"></i>
+            <h2 style="color:#10b981;">Accomplished Activities</h2>
+          </div>
+          <span class="agenda-count-badge" id="accomplished-agenda-count" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);">0 Activities</span>
+        </div>
+        <div class="full-agenda-list" id="accomplished-agenda-list"></div>
+      </section>
+    </div> <!-- End panel-agenda -->
+
+    <!-- Panel Attendance -->
+    <div id="panel-attendance" class="hidden">
+
+      <!-- Monthly Attendance Summary -->
+      <section class="monthly-summary-section">
+        <div class="section-header-row">
+          <h2 class="section-title"><i data-lucide="bar-chart-2"></i> Monthly Attendance Summary</h2>
+          <span class="section-subtitle">All activities grouped by month</span>
+        </div>
+        <main class="table-container" id="monthly-summary-container">
+          <table class="activities-table" id="monthly-summary-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Total Activities</th>
+                <th>Accomplished</th>
+                <th>Cancelled / Rescheduled</th>
+                <th>Total Attendance</th>
+                <th>Unique Members</th>
+                <th>Avg Attendance Rate</th>
+              </tr>
+            </thead>
+            <tbody id="monthly-summary-body">
+              <!-- Rendered by app.js -->
+            </tbody>
+          </table>
+        </main>
+      </section>
+
+      <!-- Activity Selection & Info Card -->
+      <section class="controls-panel attendance-controls">
+        <div class="filters-group" style="display: flex; align-items: center; gap: 10px;">
+          <label for="attendance-activity-select" style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0;">Select Activity:</label>
+          <div class="select-wrapper" style="min-width: 320px;">
+            <select id="attendance-activity-select">
+              <option value="">Choose an Activity...</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="attendance-header-actions">
+          <div id="attendance-save-status" class="save-status-container">
+            <span class="status-dot"></span>
+            <span id="save-status-text">Select an activity to begin</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity Info Summary Row -->
+      <div id="attendance-info-card" class="attendance-info-card hidden">
+        <div class="info-block hidden">
+          <span class="info-label">Date</span>
+          <strong id="attendance-info-date">-</strong>
+        </div>
+        <div class="info-block hidden">
+          <span class="info-label">Coordinator</span>
+          <strong id="attendance-info-coordinator">-</strong>
+        </div>
+        <div class="info-block hidden">
+          <span class="info-label">Chapter/Area</span>
+          <strong id="attendance-info-chapter">-</strong>
+        </div>
+        <div class="info-block hidden">
+          <span class="info-label">Venue</span>
+          <strong id="attendance-info-venue">-</strong>
+        </div>
+        <div class="info-block stats-highlight">
+          <span class="info-label">Attendance Rate</span>
+          <div class="rate-indicator-block">
+            <strong id="attendance-info-rate">0%</strong>
+            <span class="attendance-counts-sub" id="attendance-info-count">(0 / 0 present)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Sheet Container -->
+      <main class="table-container attendance-sheet-container">
+        <div class="attendance-sheet-header">
+          <h3>Attendance Sheet</h3>
+          <div class="sheet-filter-group">
+            <div class="search-box" style="min-width: 220px; max-width: 220px; margin-bottom: 0;">
+              <i data-lucide="search" class="search-icon"></i>
+              <input type="text" id="attendance-sheet-search" placeholder="Search members..." style="padding: 0.5rem 1rem 0.5rem 2.2rem; font-size: 0.85rem;">
+            </div>
+            <button id="btn-attendance-select-all" class="btn btn-secondary btn-small" style="padding: 0.5rem 0.85rem; font-size: 0.8rem;">Select All</button>
+            <button id="btn-attendance-clear-all" class="btn btn-secondary btn-small" style="padding: 0.5rem 0.85rem; font-size: 0.8rem;">Clear All</button>
+          </div>
+        </div>
+        
+        <table class="activities-table attendance-sheet-table hidden" id="attendance-sheet-table">
+          <thead>
+            <tr>
+              <th>Member Name</th>
+              <th>Chapter / Area</th>
+              <th>Role</th>
+              <th style="width: 180px; text-align: center;">Attendance Status</th>
+            </tr>
+          </thead>
+          <tbody id="attendance-sheet-body">
+            <!-- Rows dynamically loaded by app.js -->
+          </tbody>
+        </table>
+        
+        <div id="no-attendance-members-message" class="empty-state hidden">
+          <i data-lucide="user-x" class="empty-icon"></i>
+          <h3>No members found</h3>
+          <p>We couldn't find any members matching that search term.</p>
+        </div>
+
+        <div id="select-activity-prompt" class="empty-state">
+          <i data-lucide="calendar-plus" class="empty-icon"></i>
+          <h3>Select an Activity to Begin</h3>
+          <p>Please select an activity from the dropdown at the top to load and record attendance.</p>
+        </div>
+      </main>
+    </div>
+
+    <!-- Panel Servant Leaders -->
+    <div id="panel-leaders" class="hidden">
+      
+      <div class="leaders-top-panel">
+        <div class="leaders-stat-box">
+          <i data-lucide="users" class="leaders-stat-icon"></i>
+          <div class="leaders-stat-content">
+            <h3 id="stat-total-leaders">0</h3>
+            <p>TOTAL SERVANT LEADERS</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="leaders-toolbar">
+        <div class="toolbar-spacer"></div>
+        <button id="btn-add-leader" class="btn btn-primary btn-add-new admin-only hidden">
+          <i data-lucide="plus"></i> Add New
+        </button>
+      </div>
+
+      <main class="table-container leaders-table-wrapper" id="leaders-table-container">
+        <table class="activities-table leaders-table" id="leaders-table">
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>CHAPTER / AREA</th>
+              <th>ROLE / DESIGNATION</th>
+              <th>CONTACT NUMBER</th>
+              <th>EMAIL ADDRESS</th>
+              <th class="admin-only text-right">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="leaders-table-body">
+            <!-- Rows dynamically loaded by app.js -->
+          </tbody>
+        </table>
+        <div id="no-leaders-message" class="empty-state hidden">
+          <i data-lucide="user-x" class="empty-icon"></i>
+          <h3>No servant leaders found</h3>
+          <p>Assign a leadership role to a member for them to appear here.</p>
+        </div>
+      </main>
+    </div>
+
+    <!-- Panel Org Chart -->
+    <div id="panel-orgchart" class="hidden">
+      <section class="monthly-summary-section" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="section-header-row">
+          <h2 class="section-title"><i data-lucide="network"></i> Position Flow Chart</h2>
+          <span class="section-subtitle">Organizational hierarchy for MFC Youth Tarlac</span>
+        </div>
+        <main class="table-container" style="display: flex; justify-content: center; overflow: auto; padding: 2rem;">
+          <div class="org-tree">
+            <ul>
+              <li>
+                <div class="org-card aux" data-role="Mission Volunteer" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                  <div class="org-icon"><i data-lucide="heart"></i></div>
+                  <h4>Mission Volunteer</h4>
+                  <div class="org-names" id="org-names-mission-volunteer">
+                    <p id="mv-custom-name" contenteditable="true" spellcheck="false" onblur="saveCustomTitle('mv-name', this.innerText)" style="cursor: text; outline: none; border-bottom: 1px dashed rgba(255,255,255,0.3); min-width: 80px; display: inline-block;">Vacant</p>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="org-card top" data-role="Area Youth Servant" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                  <div class="org-icon"><i data-lucide="crown"></i></div>
+                  <h4>Area Youth Servant</h4>
+                  <div class="org-names" id="org-names-area-youth"></div>
+                </div>
+                <ul>
+                  <!-- EAST -->
+                  <li>
+                    <div class="org-card main" data-role="Chapter Servant" data-chapter="East" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                      <div class="org-icon"><i data-lucide="users"></i></div>
+                      <h4>East Chapter</h4>
+                      <div class="org-names" id="org-names-chapter-east"></div>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-card sub" data-role="Unit Servant" data-chapter="East" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                          <div class="org-icon"><i data-lucide="user-check"></i></div>
+                          <h4>Unit</h4>
+                          <div class="org-names" id="org-names-unit-east"></div>
+                        </div>
+                        <ul>
+                          <li>
+                            <div class="org-card sub" data-role="Household Servant" data-chapter="East" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                              <div class="org-icon"><i data-lucide="user"></i></div>
+                              <h4>Household</h4>
+                              <div class="org-names" id="org-names-household-east"></div>
+                            </div>
+                            <ul>
+                              <li>
+                                <div class="org-card base" data-role="Member" data-chapter="East" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                                  <div class="org-icon"><i data-lucide="user"></i></div>
+                                  <h4>Member</h4>
+                                  <div class="org-names" id="org-names-member-east"></div>
+                                </div>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <!-- NORTH -->
+                  <li>
+                    <div class="org-card main" data-role="Chapter Servant" data-chapter="North" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                      <div class="org-icon"><i data-lucide="users"></i></div>
+                      <h4>North Chapter</h4>
+                      <div class="org-names" id="org-names-chapter-north"></div>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-card sub" data-role="Unit Servant" data-chapter="North" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                          <div class="org-icon"><i data-lucide="user-check"></i></div>
+                          <h4>Unit</h4>
+                          <div class="org-names" id="org-names-unit-north"></div>
+                        </div>
+                        <ul>
+                          <li>
+                            <div class="org-card sub" data-role="Household Servant" data-chapter="North" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                              <div class="org-icon"><i data-lucide="user"></i></div>
+                              <h4>Household</h4>
+                              <div class="org-names" id="org-names-household-north"></div>
+                            </div>
+                            <ul>
+                              <li>
+                                <div class="org-card base" data-role="Member" data-chapter="North" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                                  <div class="org-icon"><i data-lucide="user"></i></div>
+                                  <h4>Member</h4>
+                                  <div class="org-names" id="org-names-member-north"></div>
+                                </div>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <!-- WEST -->
+                  <li>
+                    <div class="org-card main" data-role="Chapter Servant" data-chapter="West" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                      <div class="org-icon"><i data-lucide="users"></i></div>
+                      <h4>West Chapter</h4>
+                      <div class="org-names" id="org-names-chapter-west"></div>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-card sub" data-role="Unit Servant" data-chapter="West" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                          <div class="org-icon"><i data-lucide="user-check"></i></div>
+                          <h4>Unit</h4>
+                          <div class="org-names" id="org-names-unit-west"></div>
+                        </div>
+                        <ul>
+                          <li>
+                            <div class="org-card sub" data-role="Household Servant" data-chapter="West" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                              <div class="org-icon"><i data-lucide="user"></i></div>
+                              <h4>Household</h4>
+                              <div class="org-names" id="org-names-household-west"></div>
+                            </div>
+                            <ul>
+                              <li>
+                                <div class="org-card base" data-role="Member" data-chapter="West" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                                  <div class="org-icon"><i data-lucide="user"></i></div>
+                                  <h4>Member</h4>
+                                  <div class="org-names" id="org-names-member-west"></div>
+                                </div>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <!-- SOUTH -->
+                  <li>
+                    <div class="org-card main" data-role="Chapter Servant" data-chapter="South" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                      <div class="org-icon"><i data-lucide="users"></i></div>
+                      <h4>South Chapter</h4>
+                      <div class="org-names" id="org-names-chapter-south"></div>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-card sub" data-role="Unit Servant" data-chapter="South" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                          <div class="org-icon"><i data-lucide="user-check"></i></div>
+                          <h4>Unit</h4>
+                          <div class="org-names" id="org-names-unit-south"></div>
+                        </div>
+                        <ul>
+                          <li>
+                            <div class="org-card sub" data-role="Household Servant" data-chapter="South" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                              <div class="org-icon"><i data-lucide="user"></i></div>
+                              <h4>Household</h4>
+                              <div class="org-names" id="org-names-household-south"></div>
+                            </div>
+                            <ul>
+                              <li>
+                                <div class="org-card base" data-role="Member" data-chapter="South" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                                  <div class="org-icon"><i data-lucide="user"></i></div>
+                                  <h4>Member</h4>
+                                  <div class="org-names" id="org-names-member-south"></div>
+                                </div>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <!-- CENTRAL -->
+                  <li>
+                    <div class="org-card main" data-role="Chapter Servant" data-chapter="Central" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                      <div class="org-icon"><i data-lucide="users"></i></div>
+                      <h4>Central Chapter</h4>
+                      <div class="org-names" id="org-names-chapter-central"></div>
+                    </div>
+                    <ul>
+                      <li>
+                        <div class="org-card sub" data-role="Unit Servant" data-chapter="Central" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                          <div class="org-icon"><i data-lucide="user-check"></i></div>
+                          <h4>Unit</h4>
+                          <div class="org-names" id="org-names-unit-central"></div>
+                        </div>
+                        <ul>
+                          <li>
+                            <div class="org-card sub" data-role="Household Servant" data-chapter="Central" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                              <div class="org-icon"><i data-lucide="user"></i></div>
+                              <h4>Household</h4>
+                              <div class="org-names" id="org-names-household-central"></div>
+                            </div>
+                            <ul>
+                              <li>
+                                <div class="org-card base" data-role="Member" data-chapter="Central" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                                  <div class="org-icon"><i data-lucide="user"></i></div>
+                                  <h4>Member</h4>
+                                  <div class="org-names" id="org-names-member-central"></div>
+                                </div>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <div class="org-card aux" data-role="Area LIT Servant" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                  <div class="org-icon"><i data-lucide="shield"></i></div>
+                  <h4>Area LIT Servant</h4>
+                  <div class="org-names" id="org-names-area-lit"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </main>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer-info">
+      <p>Data is stored locally in your web browser. You can export/import backups at any time.</p>
+    </footer>
+  </div>
+
+  <!-- Form Modal (Add/Edit) -->
+  <div id="activity-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Activity</h2>
+        <button id="btn-close-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="activity-form">
+        <input type="hidden" id="field-id">
+        
+        <div class="form-row three-cols">
+          <div class="form-group">
+            <label for="field-date">Start Date <span class="required">*</span></label>
+            <input type="date" id="field-date" required>
+          </div>
+          <div class="form-group">
+            <label for="field-date-end">End Date <span style="font-size:0.75rem;color:var(--text-muted);">(optional)</span></label>
+            <input type="date" id="field-date-end">
+          </div>
+          <div class="form-group">
+            <label for="field-time">Time <span style="font-size:0.75rem;color:var(--text-muted);">(optional)</span></label>
+            <input type="time" id="field-time">
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-month">Month (Auto-filled, editable)</label>
+            <input type="text" id="field-month" placeholder="Select date first">
+          </div>
+          <div class="form-group">
+            <label for="field-week">Week (Auto-filled, editable)</label>
+            <input type="text" id="field-week" placeholder="Select date first">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="field-activity">Activity <span class="required">*</span></label>
+          <select id="field-activity" required>
+            <option value="">Choose an Activity...</option>
+            <option value="Live Christ Share Christ">Live Christ Share Christ</option>
+            <option value="Youth Camp">Youth Camp</option>
+            <option value="Upper Core Household">Upper Core Household</option>
+            <option value="Lower Core HouseHold">Lower Core HouseHold</option>
+            <option value="Chapter HouseHold">Chapter HouseHold</option>
+            <option value="Area Assembly">Area Assembly</option>
+            <option value="LIT">LIT</option>
+            <option value="Trainings">Trainings</option>
+            <option value="Congress">Congress</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="field-title">Title <span style="font-size:0.75rem;color:var(--text-muted);">(optional – specific event name)</span></label>
+          <input type="text" id="field-title" placeholder="e.g., Youth Camp 2026 – Summer Edition">
+        </div>
+
+        <div class="form-group">
+          <label for="field-chapter">Chapter / Area</label>
+          <select id="field-chapter">
+            <option value="">None</option>
+            <option value="AREA">AREA</option>
+            <option value="EAST">EAST</option>
+            <option value="WEST">WEST</option>
+            <option value="NORTH">NORTH</option>
+            <option value="SOUTH">SOUTH</option>
+            <option value="LIT">LIT</option>
+            <option value="UPPER CORE">UPPER CORE</option>
+            <option value="TRAINING">TRAINING</option>
+          </select>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-status">Status</label>
+            <select id="field-status">
+              <option value="">Pending</option>
+              <option value="Accomplished">Accomplished</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Rescheduled">Rescheduled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="field-held">Held In</label>
+            <select id="field-held">
+              <option value="">Select Option</option>
+              <option value="Face to Face">Face to Face</option>
+              <option value="Online">Online</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="field-venue">Venue</label>
+            <input type="text" id="field-venue" placeholder="e.g., Saint Raymond Nonnatus" list="venue-suggestions" autocomplete="off">
+            <datalist id="venue-suggestions">
+              <option value="Saint Raymond Nonnatus, Moncada">
+              <option value="Our Lady of Ransom">
+              <option value="Patalan Farm, Paniqui">
+              <option value="Community Chapel">
+            </datalist>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-submit-modal" class="btn btn-primary">Save Activity</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Import Modal (Data Merge Options) -->
+  <div id="import-modal" class="modal-overlay hidden">
+    <div class="modal-card import-card">
+      <div class="modal-header">
+        <h2>Import Data Options</h2>
+        <button id="btn-close-import-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="import-modal-body">
+        <p>We found <strong id="import-count">0</strong> activities in the file. How would you like to load them?</p>
+        
+        <div class="import-options">
+          <label class="import-option-card">
+            <input type="radio" name="import-mode" value="append" checked>
+            <div class="option-content">
+              <span class="option-title">Append to Existing Data</span>
+              <span class="option-description">Add new records to your database. Existing data will not be modified.</span>
+            </div>
+          </label>
+          
+          <label class="import-option-card warning">
+            <input type="radio" name="import-mode" value="overwrite">
+            <div class="option-content">
+              <span class="option-title">Overwrite Database</span>
+              <span class="option-description">Clear the current database and replace it entirely with the data from the imported file.</span>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-cancel-import" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="btn-confirm-import" class="btn btn-primary">Import Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Member Modal (Add/Edit) -->
+  <div id="member-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="member-modal-title">Add Member</h2>
+        <button id="btn-close-member-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="member-form">
+        <input type="hidden" id="field-member-id">
+        <input type="hidden" id="field-member-avatar-data">
+        
+        <div class="form-group" style="text-align: center; margin-bottom: 1.5rem;">
+          <div id="member-avatar-area" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); margin: 0 auto; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; border: 2px dashed rgba(255,255,255,0.2); transition: border-color 0.2s;" onclick="document.getElementById('field-member-avatar').click()">
+            <i data-lucide="camera" id="member-avatar-icon" style="color: rgba(255,255,255,0.5);"></i>
+            <img id="member-avatar-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+          </div>
+          <input type="file" id="field-member-avatar" accept="image/*" style="display: none;">
+          <button type="button" id="btn-clear-member-avatar" class="btn btn-secondary btn-small" style="margin-top: 8px; display: none; padding: 2px 8px; font-size: 11px; margin-left: auto; margin-right: auto;">Remove</button>
+        </div>
+        
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-member-firstname">First Name <span class="required">*</span></label>
+            <input type="text" id="field-member-firstname" placeholder="e.g., Juan" required>
+          </div>
+          <div class="form-group">
+            <label for="field-member-middlename">Middle Name</label>
+            <input type="text" id="field-member-middlename" placeholder="e.g., M.">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="field-member-lastname">Last Name <span class="required">*</span></label>
+          <input type="text" id="field-member-lastname" placeholder="e.g., Dela Cruz" required>
+        </div>
+        <input type="hidden" id="field-member-name">
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-member-chapter">Chapter / Area</label>
+            <select id="field-member-chapter">
+              <option value="">None</option>
+              <option value="AREA">AREA</option>
+              <option value="EAST">EAST</option>
+              <option value="WEST">WEST</option>
+              <option value="NORTH">NORTH</option>
+              <option value="SOUTH">SOUTH</option>
+              <option value="LIT">LIT</option>
+              <option value="UPPER CORE">UPPER CORE</option>
+              <option value="TRAINING">TRAINING</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="field-member-status">Status</label>
+            <select id="field-member-status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-member-role">Role / Designation</label>
+            <input type="text" id="field-member-role" placeholder="e.g., Member" list="role-suggestions" autocomplete="off">
+            <datalist id="role-suggestions">
+              <option value="Chapter Servant">
+              <option value="Household Servant">
+              <option value="Unit Servant">
+              <option value="Area LIT Servant">
+              <option value="Area Youth Servant">
+              <option value="Member">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label for="field-member-email">Email Address</label>
+            <input type="email" id="field-member-email" placeholder="e.g., member@example.com">
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-member-birthday">Birthday</label>
+            <input type="date" id="field-member-birthday">
+          </div>
+          <div class="form-group">
+            <label for="field-member-age">Age</label>
+            <input type="number" id="field-member-age" min="0" placeholder="e.g., 15">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="field-member-address">Home Address</label>
+          <input type="text" id="field-member-address" placeholder="e.g., San Manuel, Tarlac">
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="field-member-contact">Contact Number</label>
+            <input type="text" id="field-member-contact" placeholder="e.g., 9923937559">
+          </div>
+          <div class="form-group">
+            <label for="field-member-parents-contact">Parents Contact #</label>
+            <input type="text" id="field-member-parents-contact" placeholder="e.g., 9919235478">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="field-member-youthcamp-date">Date of Youth Camp</label>
+            <input type="date" id="field-member-youthcamp-date">
+          </div>
+          <div class="form-group">
+            <label for="field-member-youthcamp-title">Youth Camp Title</label>
+            <input type="text" id="field-member-youthcamp-title" placeholder="e.g., Encounter Camp">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="field-member-covenanted-date">Covenanted Date</label>
+            <input type="date" id="field-member-covenanted-date">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-member-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-submit-member-modal" class="btn btn-primary">Save Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Import Member Modal (Data Merge Options) -->
+  <div id="import-member-modal" class="modal-overlay hidden">
+    <div class="modal-card import-card">
+      <div class="modal-header">
+        <h2>Import Members Options</h2>
+        <button id="btn-close-import-member-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="import-modal-body">
+        <p>We found <strong id="import-member-count">0</strong> members in the file. How would you like to load them?</p>
+        
+        <div class="import-options">
+          <label class="import-option-card">
+            <input type="radio" name="import-member-mode" value="append" checked>
+            <div class="option-content">
+              <span class="option-title">Append to Existing Members</span>
+              <span class="option-description">Add new members to your directory. Existing records will not be modified.</span>
+            </div>
+          </label>
+          
+          <label class="import-option-card warning">
+            <input type="radio" name="import-member-mode" value="overwrite">
+            <div class="option-content">
+              <span class="option-title">Overwrite Directory</span>
+              <span class="option-description">Clear the current directory and replace it entirely with the data from the imported file.</span>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-cancel-import-member" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="btn-confirm-import-member" class="btn btn-primary">Import Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Member Profile Details Modal -->
+  <div id="member-profile-modal" class="modal-overlay hidden">
+    <div class="modal-card profile-card">
+      <div class="modal-header">
+        <h2>Member Profile & History</h2>
+        <button id="btn-close-profile-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="profile-modal-body">
+        <div class="profile-summary-header">
+          <div class="profile-avatar" id="profile-avatar-container" style="overflow: hidden; padding: 0;">
+            <i data-lucide="user" id="profile-avatar-icon" style="margin-top: 20px;"></i>
+            <img id="profile-avatar-img" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+          </div>
+          <div class="profile-title-block">
+            <h3 id="profile-name">Full Name</h3>
+            <div class="profile-badges">
+              <span id="profile-chapter" class="badge">Chapter</span>
+              <span id="profile-status" class="badge">Status</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Role:</span>
+            <strong id="profile-role">Designation</strong>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Birthday:</span>
+            <span id="profile-birthday">Date</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Age:</span>
+            <span id="profile-age">Number</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Contact:</span>
+            <span id="profile-contact">Number</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Parents Contact:</span>
+            <span id="profile-parents-contact">Number</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Email:</span>
+            <span id="profile-email">Address</span>
+          </div>
+          <div class="meta-item" style="grid-column: span 2;">
+            <span class="meta-label">Address:</span>
+            <span id="profile-address">Home Address</span>
+          </div>
+        </div>
+
+        <div class="profile-history-section">
+          <h4>Coordinated Activities (<span id="count-coordinated">0</span>)</h4>
+          <div class="history-list-wrapper">
+            <ul id="list-coordinated-activities" class="history-list">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="profile-history-section">
+          <h4>Activities Attended (<span id="count-attended">0</span>)</h4>
+          <div class="history-list-wrapper">
+            <ul id="list-attended-activities" class="history-list">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-close-profile-ok" class="btn btn-secondary">Done</button>
+        <button type="button" id="btn-profile-edit" class="btn btn-primary admin-only"><i data-lucide="edit-3"></i> Edit Member</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funds & Expenses Modal -->
+  <div id="fund-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="fund-modal-title">Add Record</h2>
+        <button id="btn-close-fund-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="fund-form">
+        <input type="hidden" id="field-fund-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="field-fund-date">Date <span class="required">*</span></label>
+            <input type="date" id="field-fund-date" required>
+          </div>
+          <div class="form-group">
+            <label for="field-fund-type">Type <span class="required">*</span></label>
+            <select id="field-fund-type" required>
+              <option value="">Select Type</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="field-fund-category">Category</label>
+            <input type="text" id="field-fund-category" placeholder="e.g., Offering, Venue, Food" list="fund-category-suggestions" autocomplete="off">
+            <datalist id="fund-category-suggestions">
+              <option value="Offering">
+              <option value="Donation">
+              <option value="Registration Fee">
+              <option value="Venue">
+              <option value="Food & Drinks">
+              <option value="Transportation">
+              <option value="Supplies">
+              <option value="Miscellaneous">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label for="field-fund-amount">Amount (₱) <span class="required">*</span></label>
+            <input type="number" id="field-fund-amount" min="0" step="0.01" placeholder="e.g., 500.00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="field-fund-description">Description</label>
+          <input type="text" id="field-fund-description" placeholder="e.g., Sunday offering collection">
+        </div>
+        <div class="form-group">
+          <label for="field-fund-notes">Reference / Notes</label>
+          <input type="text" id="field-fund-notes" placeholder="e.g., Receipt #123, handled by Juan">
+        </div>
+        <div class="form-group">
+          <label for="field-fund-receipt">Receipt Image</label>
+          <input type="file" id="field-fund-receipt" accept="image/*" style="display:none;">
+          <input type="hidden" id="field-fund-receipt-data">
+          <div id="fund-receipt-area" style="border:2px dashed rgba(255,255,255,0.15);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:border-color 0.2s;" onclick="document.getElementById('field-fund-receipt').click()">
+            <img id="fund-receipt-preview" src="" alt="Receipt preview" style="display:none;max-height:160px;max-width:100%;border-radius:8px;margin-bottom:8px;">
+            <div id="fund-receipt-placeholder" style="color:rgba(255,255,255,0.4);font-size:13px;">
+              <i data-lucide="image" style="width:28px;height:28px;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto;"></i>
+              Click to upload receipt image
+            </div>
+          </div>
+          <button type="button" id="btn-clear-receipt" class="btn btn-secondary" style="margin-top:6px;font-size:12px;padding:4px 10px;display:none;">
+            <i data-lucide="x"></i> Remove image
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-fund-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-submit-fund-modal" class="btn btn-primary">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Authentication Modal -->
+  <div id="auth-modal" class="modal-overlay hidden">
+    <div class="modal-card auth-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2>Admin Authentication</h2>
+        <button id="btn-close-auth-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="auth-form">
+        <div class="form-group">
+          <label for="field-auth-passcode">Enter Admin Passcode</label>
+          <input type="password" id="field-auth-passcode" placeholder="e.g., admin123" required autocomplete="current-password">
+          <p id="auth-error-msg" class="error-msg hidden" style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+        </div>
+        <div class="modal-footer" style="margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-auth" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Unlock Features</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Passcode Modal -->
+  <div id="change-passcode-modal" class="modal-overlay hidden">
+    <div class="modal-card passcode-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2>Change Admin Passcode</h2>
+        <button id="btn-close-passcode-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="change-passcode-form">
+        <div class="form-group">
+          <label for="field-current-passcode">Current Passcode</label>
+          <input type="password" id="field-current-passcode" required autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label for="field-new-passcode">New Passcode</label>
+          <input type="password" id="field-new-passcode" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="field-confirm-passcode">Confirm New Passcode</label>
+          <input type="password" id="field-confirm-passcode" required autocomplete="new-password">
+          <p id="passcode-error-msg" class="error-msg hidden" style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+        </div>
+        <div class="modal-footer" style="margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-passcode" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Passcode</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- Avatar Cropper Modal -->
+  <div id="cropper-modal" class="modal-overlay hidden" style="z-index: 2000;">
+    <div class="modal-card" style="max-width: 500px; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h2>Crop Profile Picture</h2>
+        <button id="btn-close-cropper-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" style="padding: 1rem;">
+        <div style="width: 100%; height: 300px; background: #0b0f19;">
+          <img id="cropper-image" src="" style="max-width: 100%; display: block;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-cancel-cropper" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="btn-save-cropper" class="btn btn-primary">Crop & Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Viewer Modal (Lightbox) -->
+  <div id="image-viewer-modal" class="modal-overlay hidden" style="z-index: 2000; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: pointer;">
+    <div style="position: relative; width: 90vw; max-width: 600px; max-height: 90vh; display: flex; justify-content: center;">
+      <button id="btn-close-image-viewer" class="btn-close" style="position: absolute; top: -40px; right: 0; color: white;"><i data-lucide="x" style="width: 32px; height: 32px;"></i></button>
+      <img id="image-viewer-img" src="" style="width: 100%; height: auto; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    </div>
+  </div>
+
+  <!-- Floating Themes Trigger Tab -->
+  <div class="theme-floating-trigger" id="theme-floating-trigger" title="Theme Customization">
+    <i data-lucide="brush"></i>
+  </div>
+
+  <!-- Themes Sliding Drawer -->
+  <aside id="theme-drawer" class="theme-drawer">
+    <div class="theme-header">
+      <h2>Themes</h2>
+      <button id="btn-close-theme" class="btn-close" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x" style="width:20px; height:20px;"></i></button>
+    </div>
+    
+    <div class="theme-body">
+      <!-- Mode -->
+      <div class="theme-section">
+        <h3>Mode</h3>
+        <div class="theme-mode-options">
+          <button class="theme-mode-btn" id="theme-mode-auto" data-mode="auto" title="System Theme">
+            <i data-lucide="sparkles"></i>
+          </button>
+          <button class="theme-mode-btn" id="theme-mode-light" data-mode="light" title="Light Theme">
+            <i data-lucide="sun"></i>
+          </button>
+          <button class="theme-mode-btn" id="theme-mode-dark" data-mode="dark" title="Dark Theme">
+            <i data-lucide="moon"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Color Accent -->
+      <div class="theme-section">
+        <h3>Color</h3>
+        <div class="theme-color-options">
+          <button class="theme-color-btn" data-color="indigo" title="Indigo"><div class="theme-color-leaf" style="--btn-color: #6366f1;"></div></button>
+          <button class="theme-color-btn" data-color="green" title="Green"><div class="theme-color-leaf" style="--btn-color: #10b981;"></div></button>
+          <button class="theme-color-btn" data-color="blue" title="Blue"><div class="theme-color-leaf" style="--btn-color: #3b82f6;"></div></button>
+          <button class="theme-color-btn" data-color="teal" title="Teal"><div class="theme-color-leaf" style="--btn-color: #0d9488;"></div></button>
+          <button class="theme-color-btn" data-color="purple" title="Purple"><div class="theme-color-leaf" style="--btn-color: #8b5cf6;"></div></button>
+          <button class="theme-color-btn" data-color="orange" title="Orange"><div class="theme-color-leaf" style="--btn-color: #f97316;"></div></button>
+          <button class="theme-color-btn" data-color="coral" title="Coral"><div class="theme-color-leaf" style="--btn-color: #ff4a4a;"></div></button>
+          <button class="theme-color-btn" data-color="red" title="Crimson"><div class="theme-color-leaf" style="--btn-color: #be123c;"></div></button>
+        </div>
+      </div>
+      
+      <!-- Border Radius -->
+      <div class="theme-section">
+        <div class="theme-slider-header">
+          <h3>Border Radius</h3>
+          <span id="radius-value-display">4</span>
+        </div>
+        <input type="range" id="theme-radius-slider" min="0" max="20" step="1" value="4" class="theme-slider">
+      </div>
+      
+      <!-- Default Font Size -->
+      <div class="theme-section">
+        <div class="theme-slider-header">
+          <h3>Default Font Size</h3>
+          <span id="font-value-display">0.8125 rem</span>
+        </div>
+        <input type="range" id="theme-font-slider" min="0.7" max="1.2" step="0.0625" value="0.8125" class="theme-slider">
+      </div>
+    </div>
+  </aside>
+
+  <!-- App Script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

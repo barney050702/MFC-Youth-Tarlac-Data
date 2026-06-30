@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0f19">
+  <title>Admin Access - MFC YOUTH TARLAC DATA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="welcome-container">
+    <div class="welcome-card">
+      <div class="welcome-logo-area">
+        <img src="logo.png" alt="MFC Youth Logo" class="welcome-logo">
+      </div>
+      <h1 class="welcome-title">Admin Login</h1>
+      <p class="welcome-subtitle">Manage activities and members</p>
+<p id="member-count" class="welcome-subtitle">Total members: 152</p>
+      <form id="admin-login-form" class="welcome-admin-form">
+        <h3>Administrator Authentication</h3>
+        <div class="welcome-input-group">
+          <i data-lucide="key-round" class="input-icon"></i>
+          <input type="password" id="admin-passcode" placeholder="Enter Admin Passcode..." required autocomplete="current-password">
+        </div>
+        <p id="admin-auth-error" class="error-msg hidden"></p>
+            <button type="submit" class="btn btn-primary btn-lg welcome-submit-btn">
+              <i data-lucide="unlock"></i> Unlock Admin Features
+            </button>
+            <button type="button" id="btn-reset-admin" class="btn btn-secondary btn-lg welcome-submit-btn">Reset Admin Auth</button>
+          </form>
+    </div>
+  </div>
+  <script>
+  // Simple client‑side auth – mirrors logic from main app
+  const PASSCODE = 'mfcyouthtarlac';
+  document.getElementById('admin-login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const entered = document.getElementById('admin-passcode').value.trim();
+    const errEl = document.getElementById('admin-auth-error');
+    if (entered === PASSCODE) {
+      // Store flag and redirect to main app with admin mode
+      localStorage.setItem('is_admin', 'true');
+      window.location.href = 'index.html';
+    } else {
+      errEl.textContent = 'Incorrect passcode.';
+      errEl.classList.remove('hidden');
+    }
+  });
+  // Reset admin authentication button
+  document.getElementById('btn-reset-admin')?.addEventListener('click', () => {
+    localStorage.removeItem('admin_passcode');
+    localStorage.removeItem('is_admin');
+    localStorage.setItem('admin_passcode', 'mfcyouthtarlac');
+    localStorage.setItem('is_admin', 'false');
+    alert('Admin authentication has been reset to default.');
+  });
+  lucide.createIcons();
+  </script>
+</body>
+</html>
