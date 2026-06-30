@@ -1312,10 +1312,17 @@ function renderActivities() {
 }
 
 function renderDashboard() {
-  const allData = dbActivities.getAll();
+  // Scope data to chapter for chapter heads
+  const isChapterHead = currentUserRole === 'chapterhead' && currentUserChapter;
+  const allData = isChapterHead
+    ? dbActivities.getAll().filter(a => a.chapter === currentUserChapter)
+    : dbActivities.getAll();
+  const allMembers = isChapterHead
+    ? dbMembers.getAll().filter(m => m.chapter === currentUserChapter)
+    : dbMembers.getAll();
+
   totalStatEl.textContent = allData.length;
   accomplishedStatEl.textContent = allData.filter(item => item.status === 'Accomplished').length;
-  const allMembers = dbMembers.getAll();
   membersStatEl.textContent = allMembers.length;
   activitiesActiveMembersStatEl.textContent = allMembers.filter(m => (m.status || 'Active').toLowerCase() === 'active').length;
   activitiesInactiveMembersStatEl.textContent = allMembers.filter(m => (m.status || '').toLowerCase() === 'inactive').length;
@@ -1951,9 +1958,16 @@ window.quickAccomplishActivity = function (id) {
 function updateActivityFilters() {
   currentActivityFilters.search = searchInput.value;
   currentActivityFilters.month = monthFilter.value;
-  currentActivityFilters.chapter = chapterFilter.value;
   currentActivityFilters.status = statusFilter.value;
-  currentActivitiesPage = 1; // Reset to first page on filter change
+  // Chapter heads are locked to their assigned chapter — ignore DOM value
+  if (currentUserRole === 'chapterhead' && currentUserChapter) {
+    currentActivityFilters.chapter = currentUserChapter;
+    chapterFilter.value = currentUserChapter;
+    chapterFilter.disabled = true;
+  } else {
+    currentActivityFilters.chapter = chapterFilter.value;
+  }
+  currentActivitiesPage = 1;
   renderActivities();
 }
 
@@ -2226,9 +2240,16 @@ function renderMembers() {
 // Member Filters actions
 function updateMemberFilters() {
   currentMemberFilters.search = memberSearchInput.value;
-  currentMemberFilters.chapter = memberChapterFilter.value;
   currentMemberFilters.status = memberStatusFilter.value;
-  currentMembersPage = 1; // Reset to first page on filter change
+  // Chapter heads are locked to their assigned chapter — ignore DOM value
+  if (currentUserRole === 'chapterhead' && currentUserChapter) {
+    currentMemberFilters.chapter = currentUserChapter;
+    memberChapterFilter.value = currentUserChapter;
+    memberChapterFilter.disabled = true;
+  } else {
+    currentMemberFilters.chapter = memberChapterFilter.value;
+  }
+  currentMembersPage = 1;
   renderMembers();
 }
 
@@ -3172,7 +3193,9 @@ function loadActivityAttendance(activityId) {
 }
 
 function renderAttendanceSheet() {
-  const members = dbMembers.getAll();
+  const members = currentUserRole === 'chapterhead' && currentUserChapter
+    ? dbMembers.getAll().filter(m => m.chapter === currentUserChapter)
+    : dbMembers.getAll();
   members.sort((a, b) => a.name.localeCompare(b.name));
 
   const currentAct = dbActivities.getAll().find(a => a.id === Number(currentAttendanceActivityId));
@@ -4046,6 +4069,8 @@ firebase.auth().onAuthStateChanged(async (user) => {
 
 document.getElementById('welcome-admin-form').addEventListener('submit', async (e) => {
   e.preventDefault();
+  console.log('Admin login submitted', { email, password });
+  if (!firebase) { console.error('Firebase SDK not loaded'); }
   const email = document.getElementById('welcome-admin-email').value;
   const password = document.getElementById('welcome-passcode-field').value;
   const welcomeError = document.getElementById('welcome-auth-error');
@@ -4203,7 +4228,9 @@ function renderLeaders() {
   const totalLeadersStat = document.getElementById('stat-total-leaders');
   if (!tbody) return;
 
-  const allMembers = dbMembers.getAll();
+  const allMembers = currentUserRole === 'chapterhead' && currentUserChapter
+    ? dbMembers.getAll().filter(m => m.chapter === currentUserChapter)
+    : dbMembers.getAll();
   // Filter members whose role is not empty and not just 'Member'
   const leaders = allMembers.filter(m => m.role && m.role.trim() !== '' && m.role.toLowerCase() !== 'member');
 
