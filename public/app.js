@@ -4652,13 +4652,16 @@ function renderResources(category) {
   files.sort((a, b) => a.title.localeCompare(b.title));
 
   if (files.length === 0) {
-    if (category === 'songboard' && dbResources.getAll().length === 0) {
-       files.push({
+    if (category === 'songboard' && dbResources.getAll().filter(r => r.category === 'songboard').length === 0) {
+       const songboardFile = {
          title: 'MFC Youth Songboard',
          filename: 'MFC Youth Songboard.pptx',
          icon: 'file-presentation',
-         url: 'resources/MFC Youth Songboard.pptx'
-       });
+         url: 'resources/MFC Youth Songboard.pptx',
+         category: 'songboard'
+       };
+       dbResources.add(songboardFile);
+       files.push(songboardFile);
     } else if (category === 'youthcamp' && dbResources.getAll().filter(r => r.category === 'youthcamp').length === 0) {
       const youthCampFiles = [
         { title: 'SESSION 1 - God\'s Love and His Plans for Us', filename: 'SESSION 1 - God_s Love and his plans for us.pptx', icon: 'file-presentation', url: 'resources/youthcamp/SESSION 1 - God_s Love and his plans for us.pptx', category: 'youthcamp' },
