@@ -4740,6 +4740,157 @@ window.deleteResource = function(id) {
   }
 };
 
+// ==========================================
+// ACCOUNT RECOVERY & EMAILJS LOGIC
+// ==========================================
+
+let emailRecoverySettings = {};
+
+if (typeof db !== 'undefined' && db) {
+  db.collection('settings').doc('recovery').onSnapshot(doc => {
+    if (doc.exists) {
+      emailRecoverySettings = doc.data();
+    }
+  });
+}
+
+// Settings Modal Logic
+const recoveryModal = document.getElementById('recovery-options-modal');
+const btnRecoveryTrigger = document.getElementById('btn-recovery-options-trigger');
+const btnCloseRecovery = document.getElementById('btn-close-recovery-modal');
+const btnCancelRecovery = document.getElementById('btn-cancel-recovery-options');
+const recoveryForm = document.getElementById('recovery-options-form');
+
+if (btnRecoveryTrigger) {
+  btnRecoveryTrigger.addEventListener('click', () => {
+    document.getElementById('field-recovery-email').value = emailRecoverySettings.email || '';
+    document.getElementById('field-emailjs-public-key').value = emailRecoverySettings.publicKey || '';
+    document.getElementById('field-emailjs-service-id').value = emailRecoverySettings.serviceId || '';
+    document.getElementById('field-emailjs-template-id').value = emailRecoverySettings.templateId || '';
+    recoveryModal.classList.remove('hidden');
+    // Hide dropdown
+    const dropdown = document.getElementById('admin-profile-dropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+  });
+}
+
+const hideRecoveryModal = () => {
+  if (recoveryModal) recoveryModal.classList.add('hidden');
+};
+if (btnCloseRecovery) btnCloseRecovery.addEventListener('click', hideRecoveryModal);
+if (btnCancelRecovery) btnCancelRecovery.addEventListener('click', hideRecoveryModal);
+
+if (recoveryForm) {
+  recoveryForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const settings = {
+      email: document.getElementById('field-recovery-email').value.trim(),
+      publicKey: document.getElementById('field-emailjs-public-key').value.trim(),
+      serviceId: document.getElementById('field-emailjs-service-id').value.trim(),
+      templateId: document.getElementById('field-emailjs-template-id').value.trim()
+    };
+    
+    if (typeof db !== 'undefined' && db) {
+      db.collection('settings').doc('recovery').set(settings)
+        .then(() => {
+          const msg = document.getElementById('recovery-options-msg');
+          msg.textContent = 'Settings saved securely!';
+          msg.style.color = 'var(--success)';
+          msg.classList.remove('hidden');
+          setTimeout(() => {
+            msg.classList.add('hidden');
+            hideRecoveryModal();
+          }, 2000);
+        })
+        .catch(err => alert('Failed to save settings: ' + err));
+    }
+  });
+}
+
+// Forgot Passcode Modal Logic
+const forgotModal = document.getElementById('forgot-passcode-modal');
+const btnForgotTrigger = document.getElementById('btn-forgot-passcode-trigger');
+const btnCloseForgot = document.getElementById('btn-close-forgot-modal');
+const btnCancelForgot = document.getElementById('btn-cancel-forgot-passcode');
+const forgotForm = document.getElementById('forgot-passcode-form');
+const forgotMsg = document.getElementById('forgot-passcode-msg');
+
+if (btnForgotTrigger) {
+  btnForgotTrigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    forgotModal.classList.remove('hidden');
+    if (forgotMsg) forgotMsg.classList.add('hidden');
+    document.getElementById('field-verify-recovery-email').value = '';
+  });
+}
+
+const hideForgotModal = () => {
+  if (forgotModal) forgotModal.classList.add('hidden');
+};
+if (btnCloseForgot) btnCloseForgot.addEventListener('click', hideForgotModal);
+if (btnCancelForgot) btnCancelForgot.addEventListener('click', hideForgotModal);
+
+if (forgotForm) {
+  forgotForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const inputEmail = document.getElementById('field-verify-recovery-email').value.trim();
+    const btnSubmit = document.getElementById('btn-submit-forgot-passcode');
+    
+    if (!emailRecoverySettings.email) {
+      forgotMsg.textContent = 'Account recovery has not been configured by the admin yet.';
+      forgotMsg.style.color = 'var(--danger)';
+      forgotMsg.classList.remove('hidden');
+      return;
+    }
+    
+    if (inputEmail.toLowerCase() !== emailRecoverySettings.email.toLowerCase()) {
+      forgotMsg.textContent = 'This email does not match our records.';
+      forgotMsg.style.color = 'var(--danger)';
+      forgotMsg.classList.remove('hidden');
+      return;
+    }
+    
+    // Attempt sending email via EmailJS
+    btnSubmit.textContent = 'Sending...';
+    btnSubmit.disabled = true;
+    
+    const passcode = localStorage.getItem('admin_passcode') || 'mfcyouthtarlac';
+    
+    try {
+      emailjs.init(emailRecoverySettings.publicKey);
+      
+      emailjs.send(emailRecoverySettings.serviceId, emailRecoverySettings.templateId, {
+        passcode: passcode,
+        reply_to: emailRecoverySettings.email
+      })
+      .then(() => {
+        forgotMsg.textContent = 'Passcode sent successfully! Check your inbox.';
+        forgotMsg.style.color = 'var(--success)';
+        forgotMsg.classList.remove('hidden');
+        setTimeout(() => {
+          hideForgotModal();
+        }, 3000);
+      })
+      .catch((err) => {
+        forgotMsg.textContent = 'Failed to send email. Ensure your EmailJS settings are correct.';
+        forgotMsg.style.color = 'var(--danger)';
+        forgotMsg.classList.remove('hidden');
+        console.error(err);
+      })
+      .finally(() => {
+        btnSubmit.textContent = 'Send Recovery Email';
+        btnSubmit.disabled = false;
+      });
+    } catch(err) {
+      forgotMsg.textContent = 'EmailJS SDK not loaded or incorrect setup.';
+      forgotMsg.style.color = 'var(--danger)';
+      forgotMsg.classList.remove('hidden');
+      btnSubmit.textContent = 'Send Recovery Email';
+      btnSubmit.disabled = false;
+    }
+  });
+}
+
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
