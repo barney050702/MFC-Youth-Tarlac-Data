@@ -4656,6 +4656,19 @@ function renderResources(category) {
          icon: 'file-presentation',
          url: 'resources/MFC Youth Songboard.pptx'
        });
+    } else if (category === 'youthcamp' && dbResources.getAll().filter(r => r.category === 'youthcamp').length === 0) {
+      const youthCampFiles = [
+        { title: 'SESSION 1 - God\'s Love and His Plans for Us', filename: 'SESSION 1 - God_s Love and his plans for us.pptx', icon: 'file-presentation', url: 'resources/youthcamp/SESSION 1 - God_s Love and his plans for us.pptx', category: 'youthcamp' },
+        { title: 'Session 2 - Who is Jesus Christ', filename: 'Session 2 - Who is Jesus Christ.pptx', icon: 'file-presentation', url: 'resources/youthcamp/Session 2 - Who is Jesus Christ.pptx', category: 'youthcamp' },
+        { title: 'Session 3 - Repentance and Faith', filename: 'Session 3 - Repentance and Faith.pptx', icon: 'file-presentation', url: 'resources/youthcamp/Session 3 - Repentance and Faith.pptx', category: 'youthcamp' },
+        { title: 'Session 4 - Receiving God\'s Gift: The Power of the Holy Spirit', filename: 'Session 4 - Receiving God_s Gift_ The Power of the Holy Spirit.pptx', icon: 'file-presentation', url: 'resources/youthcamp/Session 4 - Receiving God_s Gift_ The Power of the Holy Spirit.pptx', category: 'youthcamp' },
+        { title: 'Session 5 - Growing in the Spirit', filename: 'Session 5 Growing in the Spirit.pptx', icon: 'file-presentation', url: 'resources/youthcamp/Session 5 Growing in the Spirit.pptx', category: 'youthcamp' },
+        { title: 'MFC Youth Youth Camp Manual 2020', filename: 'MFC Youth Youth Camp Manual 2020.pdf', icon: 'file-text', url: 'resources/youthcamp/MFC Youth Youth Camp Manual 2020.pdf', category: 'youthcamp' }
+      ];
+      youthCampFiles.forEach(f => {
+        dbResources.add(f);
+        files.push(f); // also render them immediately
+      });
     } else {
       contentArea.innerHTML = `
         <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
