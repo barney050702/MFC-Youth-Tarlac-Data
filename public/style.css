@@ -3999,3 +3999,45 @@ body.view-only .agenda-list-actions {
   border: 1px solid #334155;
   display: inline-block;
 }
+
+.fab-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: white;
+  color: #0b0f19;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.fab:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  background: #f3f4f6;
+}
+
+.fab i {
+  width: 24px;
+  height: 24px;
+}
+
+[data-theme="light"] .fab {
+  background: #0f172a;
+  color: white;
+}
+
+[data-theme="light"] .fab:hover {
+  background: #1e293b;
+}
