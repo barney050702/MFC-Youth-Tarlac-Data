@@ -1873,13 +1873,17 @@ body.view-only .agenda-list-actions {
 
 @media (max-width: 768px) {
   .app-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     gap: 1rem;
+    flex-wrap: nowrap;
   }
   
   .header-actions {
-    width: 100%;
+    width: auto;
+    flex: 1;
+    overflow: hidden;
   }
   
   .header-actions .btn {
