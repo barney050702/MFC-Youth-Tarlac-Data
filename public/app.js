@@ -541,6 +541,14 @@ class MembersDatabase {
         snapshot.forEach(doc => {
           newData.push(doc.data());
         });
+        
+        // Ensure Aguinaldo is assigned to West
+        const aguinaldo = newData.find(m => m.name === 'Aguinaldo, Allen Kristian');
+        if (aguinaldo && aguinaldo.area !== 'West') {
+          aguinaldo.area = 'West';
+          db.collection('members').doc(aguinaldo.id.toString()).set(aguinaldo);
+        }
+
         if (newData.length > 0 || snapshot.empty) {
           this.members = newData;
           this.saveToStorage();
