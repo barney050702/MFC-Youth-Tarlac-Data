@@ -1978,5 +1978,55 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
+
+  <!-- B1: Bottom Navigation Bar (mobile only) -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Mobile navigation">
+    <button class="bottom-nav-item active" id="bnav-dashboard" onclick="switchTab('dashboard')" aria-label="Dashboard">
+      <i data-lucide="layout-dashboard"></i>
+      <span>Dashboard</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-activities" onclick="switchTab('activities')" aria-label="Activities">
+      <i data-lucide="calendar-check"></i>
+      <span>Activities</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-members" onclick="switchTab('members')" aria-label="Members">
+      <i data-lucide="users"></i>
+      <span>Members</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-attendance" onclick="switchTab('attendance')" aria-label="Attendance">
+      <i data-lucide="clipboard-list"></i>
+      <span>Attendance</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-funds" onclick="switchTab('funds')" aria-label="Funds">
+      <i data-lucide="wallet"></i>
+      <span>Funds</span>
+    </button>
+  </nav>
+
+  <!-- B4: Global Search FAB (mobile only) -->
+  <button class="search-fab" id="search-fab" aria-label="Search">
+    <i data-lucide="search"></i>
+  </button>
+
+  <!-- Global Search Overlay -->
+  <div class="search-overlay" id="search-overlay" role="dialog" aria-label="Search">
+    <div class="search-overlay-header">
+      <div class="search-overlay-input">
+        <i data-lucide="search" style="width:18px;height:18px;color:var(--primary);flex-shrink:0;"></i>
+        <input type="search" id="global-search-input" placeholder="Search members, activities..." autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+      <button class="search-overlay-close" id="search-overlay-close" aria-label="Close search">✕</button>
+    </div>
+    <div class="search-overlay-results" id="search-overlay-results">
+      <p class="search-result-empty">Start typing to search across all data…</p>
+    </div>
+  </div>
+
+  <!-- B5: Pull-to-refresh indicator -->
+  <div class="ptr-indicator" id="ptr-indicator">
+    <div class="ptr-spinner"></div>
+    <span>Syncing data…</span>
+  </div>
+
 </body>
 </html>

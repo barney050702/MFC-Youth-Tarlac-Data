@@ -5291,3 +5291,176 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+// ==========================================
+// MOBILE IMPROVEMENTS (Phase C)
+// ==========================================
+
+// C1 — Sync bottom nav with switchTab
+(function () {
+  const bnavMap = { dashboard:'bnav-dashboard', activities:'bnav-activities', members:'bnav-members', attendance:'bnav-attendance', funds:'bnav-funds' };
+  const _orig = switchTab;
+  switchTab = function (tabName, subTabName) {
+    _orig(tabName, subTabName);
+    Object.values(bnavMap).forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('active'); });
+    const bid = bnavMap[tabName];
+    if (bid) { const el=document.getElementById(bid); if(el) el.classList.add('active'); }
+    lucide.createIcons();
+  };
+})();
+
+// C2 — Mobile card renderers
+function isMobile() { return window.innerWidth <= 768; }
+
+function renderActivitiesMobileCards() {
+  const container = document.getElementById('activities-mobile-cards');
+  if (!container) return;
+  let data = dbActivities.getFiltered(currentActivityFilters).filter(a => a.status === 'Accomplished');
+  container.innerHTML = data.length === 0
+    ? '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No activities found.</p>'
+    : data.map(a => `
+        <div class="mobile-data-card">
+          <div class="mobile-data-card-title">${a.title || a.activity || '—'}</div>
+          <div class="mobile-data-card-meta">
+            <span class="badge badge-chapter">${a.chapter_area || '—'}</span>
+            <span>${a.date ? formatDateRange(a.date, a.date_end) : '—'}</span>
+            ${a.held_in ? `<span>· ${a.held_in}</span>` : ''}
+          </div>
+          ${isAdmin ? `<div class="mobile-data-card-actions">
+            <button class="btn btn-sm btn-outline" onclick="openEditActivityModal(${a.id})"><i data-lucide="pencil"></i> Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteActivity(${a.id})"><i data-lucide="trash-2"></i></button>
+          </div>` : ''}
+        </div>`).join('');
+  lucide.createIcons();
+}
+
+function renderMembersMobileCards() {
+  const container = document.getElementById('members-mobile-cards');
+  if (!container) return;
+  const data = dbMembers.getFiltered(currentMemberFilters);
+  container.innerHTML = data.length === 0
+    ? '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No members found.</p>'
+    : data.map(m => `
+        <div class="mobile-data-card" onclick="openMemberProfile(${m.id})">
+          <div class="mobile-data-card-title">${m.name || '—'}</div>
+          <div class="mobile-data-card-meta">
+            <span class="badge badge-chapter">${m.chapter_area || m.chapter || '—'}</span>
+            <span class="badge badge-status ${(m.status||'active').toLowerCase()}">${m.status||'Active'}</span>
+            ${m.role && m.role !== 'Member' ? `<span class="leader-role-badge">${m.role}</span>` : ''}
+          </div>
+          ${m.contact ? `<div class="mobile-data-card-meta" style="gap:0.3rem;"><i data-lucide="phone" style="width:12px;height:12px;"></i> ${m.contact}</div>` : ''}
+        </div>`).join('');
+  lucide.createIcons();
+}
+
+// Inject mobile card containers on DOM-ready
+(function injectMobileCardContainers() {
+  const actPanel = document.getElementById('panel-activities');
+  if (actPanel && !document.getElementById('activities-mobile-cards')) {
+    const wrap = document.createElement('div');
+    wrap.id = 'activities-mobile-cards'; wrap.className = 'mobile-cards-container'; wrap.style.padding = '0 1rem 1rem';
+    actPanel.appendChild(wrap);
+  }
+  const memPanel = document.getElementById('panel-members');
+  if (memPanel && !document.getElementById('members-mobile-cards')) {
+    const wrap = document.createElement('div');
+    wrap.id = 'members-mobile-cards'; wrap.className = 'mobile-cards-container'; wrap.style.padding = '0 1rem 1rem';
+    memPanel.appendChild(wrap);
+  }
+})();
+
+// C3 — Skeleton loaders
+function showSkeletons() {
+  ['activities-mobile-cards','members-mobile-cards'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = Array(4).fill('<div class="skeleton-card"><span class="skeleton-line long"></span><span class="skeleton-line medium"></span><span class="skeleton-line short"></span></div>').join('');
+  });
+}
+if (isMobile()) showSkeletons();
+
+// C4 — Swipe-to-dismiss modals
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  let startY = 0;
+  overlay.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  overlay.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - startY > 100) overlay.classList.add('hidden');
+  }, { passive: true });
+});
+
+// C5 — Pull-to-refresh
+(function initPTR() {
+  let startY = 0, pulling = false;
+  const ptrEl = document.getElementById('ptr-indicator');
+  if (!ptrEl) return;
+  document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (e.touches[0].clientY - startY > 60 && window.scrollY === 0 && !pulling) {
+      pulling = true; ptrEl.classList.add('ptr-visible');
+    }
+  }, { passive: true });
+  document.addEventListener('touchend', () => {
+    if (!pulling) return;
+    pulling = false;
+    setTimeout(() => {
+      ptrEl.classList.remove('ptr-visible');
+      const active = document.querySelector('[id^="panel-"]:not(.hidden)');
+      if (active) {
+        const p = active.id.replace('panel-','');
+        if (p==='dashboard') renderDashboard();
+        else if (p==='activities') renderActivities();
+        else if (p==='members') renderMembers();
+        else if (p==='funds') renderFunds();
+      }
+    }, 900);
+  }, { passive: true });
+})();
+
+// C6 — Global Search FAB
+(function initGlobalSearch() {
+  const fab = document.getElementById('search-fab');
+  const overlay = document.getElementById('search-overlay');
+  const closeBtn = document.getElementById('search-overlay-close');
+  const input = document.getElementById('global-search-input');
+  const results = document.getElementById('search-overlay-results');
+  if (!fab || !overlay || !input || !results) return;
+
+  const openSearch = () => { overlay.classList.add('active'); setTimeout(() => input.focus(), 100); lucide.createIcons(); };
+  const closeSearch = () => {
+    overlay.classList.remove('active');
+    input.value = '';
+    results.innerHTML = '<p class="search-result-empty">Start typing to search across all data…</p>';
+  };
+
+  fab.addEventListener('click', openSearch);
+  closeBtn && closeBtn.addEventListener('click', closeSearch);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q || q.length < 2) { results.innerHTML = '<p class="search-result-empty">Start typing to search across all data…</p>'; return; }
+
+    const memberHits = dbMembers.getAll()
+      .filter(m => (m.name||'').toLowerCase().includes(q) || (m.chapter_area||'').toLowerCase().includes(q) || (m.role||'').toLowerCase().includes(q))
+      .slice(0, 8);
+    const activityHits = dbActivities.getAll()
+      .filter(a => (a.title||a.activity||'').toLowerCase().includes(q) || (a.chapter_area||'').toLowerCase().includes(q))
+      .slice(0, 8);
+
+    const all = [
+      ...memberHits.map(m => ({ type:'Member', name:m.name, meta:`${m.chapter_area||''} · ${m.role||'Member'}`, action:()=>{ closeSearch(); switchTab('members'); setTimeout(()=>openMemberProfile(m.id),200); } })),
+      ...activityHits.map(a => ({ type:'Activity', name:a.title||a.activity, meta:`${a.chapter_area||''} · ${a.date||''}`, action:()=>{ closeSearch(); switchTab('activities'); } }))
+    ];
+
+    if (all.length === 0) { results.innerHTML = '<p class="search-result-empty">No results found.</p>'; return; }
+
+    results.innerHTML = all.map((r,i) => `
+      <div class="search-result-item" data-idx="${i}">
+        <span class="search-result-type">${r.type}</span>
+        <span class="search-result-name">${r.name}</span>
+        <span class="search-result-meta">${r.meta}</span>
+      </div>`).join('');
+    results.querySelectorAll('.search-result-item').forEach((el,i) => el.addEventListener('click', () => all[i].action()));
+  });
+})();
+
+// C7 — Theme already persists via localStorage (applyTheme saves to localStorage on every toggle)
