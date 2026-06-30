@@ -4290,7 +4290,8 @@ if (btnAddLeaderAction) {
 // ==========================================
 
 function renderOrgChart() {
-  const members = dbMembers.getAll().filter(m => m.status === 'Active');
+  // Include ALL members (not just 'Active') so leaders assigned via the Leaders tab appear
+  const members = dbMembers.getAll();
 
   const containerAreaYouth = document.getElementById('org-names-area-youth');
   const containerAreaLit = document.getElementById('org-names-area-lit');
@@ -4298,11 +4299,17 @@ function renderOrgChart() {
 
   if (!containerAreaYouth) return;
 
+  // Helper: get the effective chapter for a member (checks both chapter_area and chapter)
+  const getMemberChapter = (m) => (m.chapter_area || m.chapter || '').trim();
+
   const renderList = (container, rolePattern, chapterMatch = null) => {
     if (!container) return;
     const matched = members.filter(m => {
       const roleMatches = m.role && m.role.toLowerCase().includes(rolePattern);
-      const chapterMatches = chapterMatch ? (m.chapter_area === chapterMatch) : true;
+      const effectiveChapter = getMemberChapter(m).toLowerCase();
+      const chapterMatches = chapterMatch
+        ? (effectiveChapter === chapterMatch.toLowerCase() || getMemberChapter(m) === chapterMatch)
+        : true;
       return roleMatches && chapterMatches;
     });
     matched.sort((a, b) => {
@@ -4324,16 +4331,16 @@ function renderOrgChart() {
 
   regions.forEach(region => {
     const rLower = region.toLowerCase();
-    renderList(document.getElementById(`org-names-chapter-${rLower}`), 'chapter', region);
+    renderList(document.getElementById(`org-names-chapter-${rLower}`), 'chapter servant', region);
     renderList(document.getElementById(`org-names-unit-${rLower}`), 'unit', region);
-    renderList(document.getElementById(`org-names-household-${rLower}`), 'household', region);
+    renderList(document.getElementById(`org-names-household-${rLower}`), 'household servant', region);
 
     // For members, match exactly "Member" or "Participant" or empty role
     const containerMember = document.getElementById(`org-names-member-${rLower}`);
     if (containerMember) {
       const baseMembers = members.filter(m => {
         const isBaseRole = !m.role || m.role.toLowerCase() === 'member' || m.role.toLowerCase() === 'participant';
-        const isRegionMatch = m.chapter_area === region;
+        const isRegionMatch = getMemberChapter(m).toLowerCase() === rLower || getMemberChapter(m) === region;
         return isBaseRole && isRegionMatch;
       });
       if (baseMembers.length === 0) {
@@ -4344,6 +4351,7 @@ function renderOrgChart() {
     }
   });
 }
+
 
 // Drag and Drop Handlers
 window.handleDragStart = function (e) {
