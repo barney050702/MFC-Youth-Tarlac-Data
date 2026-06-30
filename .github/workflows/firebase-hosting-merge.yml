@@ -11,12 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
-      - name: Deploy to Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MFC_YOUTH_TARLAC_DATA_BASE }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > serviceAccount.json
-          export GOOGLE_APPLICATION_CREDENTIALS=serviceAccount.json
-          firebase deploy --project mfc-youth-tarlac-data-base --only hosting
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MFC_YOUTH_TARLAC_DATA_BASE }}
+          channelId: live
+          projectId: mfc-youth-tarlac-data-base
