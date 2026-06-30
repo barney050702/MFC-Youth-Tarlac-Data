@@ -175,8 +175,8 @@
           <i data-lucide="menu" id="main-menu-trigger"></i>
         </div>
       </div>
-      <div class="header-actions">
-        <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--primary); margin-right: 1rem;">
+      <div class="header-actions" style="max-width: 100%;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--primary); min-width: 0; max-width: 100%;">
           <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" class="web-link-icon" aria-label="Navigate to Facebook Page">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook" style="color: var(--primary);"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
             <span class="custom-tooltip">Navigate to Facebook Page...</span>
@@ -226,9 +226,9 @@
           </div>
           
           <div style="width: 1px; height: 28px; background-color: rgba(255,255,255,0.15);"></div>
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <img src="logo.png" alt="MFC Youth Logo" style="height: 32px; width: 32px; object-fit: cover; border-radius: 50%; background-color: transparent;">
-            <h1 style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0; white-space: nowrap;">MFC YOUTH TARLAC PORTAL</h1>
+          <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden; min-width: 0;">
+            <img src="logo.png" alt="MFC Youth Logo" style="height: 32px; width: 32px; min-width: 32px; object-fit: cover; border-radius: 50%; background-color: transparent; flex-shrink: 0;">
+            <h1 class="header-title" style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MFC YOUTH TARLAC PORTAL</h1>
           </div>
         </div>
     </header>
