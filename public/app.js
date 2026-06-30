@@ -940,22 +940,59 @@ function switchTab(tabName, subTabName = null) {
     
     const resTitle = document.getElementById('resources-title');
     const resSubtitle = document.getElementById('resources-subtitle');
-    if (resTitle && resSubtitle) {
+    const contentArea = document.getElementById('resources-content-area');
+    if (resTitle && resSubtitle && contentArea) {
       if (subTabName === 'youthcamp') {
         resTitle.innerHTML = '<i data-lucide="tent"></i> Youthcamp';
         resSubtitle.textContent = 'Files and guidelines for Youthcamp';
+        contentArea.innerHTML = `
+          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+          <h3>Youthcamp Files Coming Soon</h3>
+          <p>No files uploaded for Youthcamp yet.</p>
+        `;
       } else if (subTabName === 'trainings') {
         resTitle.innerHTML = '<i data-lucide="book-open"></i> Trainings';
         resSubtitle.textContent = 'Training materials';
+        contentArea.innerHTML = `
+          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+          <h3>Trainings Files Coming Soon</h3>
+          <p>No files uploaded for Trainings yet.</p>
+        `;
       } else if (subTabName === 'songboard') {
         resTitle.innerHTML = '<i data-lucide="music"></i> Songboard';
         resSubtitle.textContent = 'Lyrics and chords';
+        contentArea.innerHTML = `
+          <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 1rem; text-align: left;">
+              <div style="background: var(--primary); width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <i data-lucide="file-presentation" style="color: white;"></i>
+              </div>
+              <div>
+                <h4 style="margin: 0; font-size: 1.1rem;">MFC Youth Songboard</h4>
+                <span style="font-size: 0.85rem; color: var(--text-dim);">PowerPoint Presentation (.pptx)</span>
+              </div>
+            </div>
+            <a href="resources/MFC Youth Songboard.pptx" download class="btn btn-primary" style="padding: 0.5rem 1rem;">
+              <i data-lucide="download"></i> Download
+            </a>
+          </div>
+        `;
       } else if (subTabName === 'holy-rosary') {
         resTitle.innerHTML = '<i data-lucide="heart"></i> Holy Rosary';
         resSubtitle.textContent = 'Rosary guides and prayers';
+        contentArea.innerHTML = `
+          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+          <h3>Holy Rosary Files Coming Soon</h3>
+          <p>No files uploaded for Holy Rosary yet.</p>
+        `;
       } else {
         resTitle.innerHTML = '<i data-lucide="folder-open"></i> Resources';
         resSubtitle.textContent = 'Access learning materials and guidelines';
+        contentArea.innerHTML = `
+          <i data-lucide="folder-open" style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 1rem;"></i>
+          <h3>Select a Resource Category</h3>
+          <p>Choose a category from the sidebar menu.</p>
+        `;
       }
       lucide.createIcons();
     }
