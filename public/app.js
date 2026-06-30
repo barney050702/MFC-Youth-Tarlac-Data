@@ -4521,6 +4521,7 @@ function toggleSubmenu(submenuId) {
 document.addEventListener('click', (e) => {
   const trigger = e.target.closest('#main-menu-trigger');
   if (trigger) {
+    e.stopPropagation();
     openSidebar();
   }
 });
