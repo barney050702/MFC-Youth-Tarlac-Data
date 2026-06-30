@@ -132,21 +132,8 @@
     </div>
   </div>
 
-  <!-- Auth Loading Splash — shown while Firebase resolves auth state -->
-  <div id="auth-loading-screen" style="
-    position:fixed;inset:0;z-index:9999;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
-    background:#0f172a;
-  ">
-    <img src="logo.png" alt="MFC Youth Logo" style="width:72px;height:72px;border-radius:50%;animation:pulse 1.5s ease-in-out infinite;">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
-      <div style="width:36px;height:36px;border:3px solid rgba(99,102,241,0.3);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-      <span style="color:rgba(255,255,255,0.4);font-size:0.8rem;letter-spacing:1px;">Checking session…</span>
-    </div>
-  </div>
-
   <!-- Welcome / Landing Screen -->
-  <div id="welcome-screen" class="welcome-container hidden">
+  <div id="welcome-screen" class="welcome-container">
     <div class="welcome-card">
       <div class="welcome-logo-area">
         <img src="logo.png" alt="MFC Youth Logo" class="welcome-logo">
@@ -1991,55 +1978,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
-
-  <!-- B1: Bottom Navigation Bar (mobile only) -->
-  <nav class="bottom-nav" id="bottom-nav" aria-label="Mobile navigation">
-    <button class="bottom-nav-item active" id="bnav-dashboard" onclick="switchTab('dashboard')" aria-label="Dashboard">
-      <i data-lucide="layout-dashboard"></i>
-      <span>Dashboard</span>
-    </button>
-    <button class="bottom-nav-item" id="bnav-activities" onclick="switchTab('activities')" aria-label="Activities">
-      <i data-lucide="calendar-check"></i>
-      <span>Activities</span>
-    </button>
-    <button class="bottom-nav-item" id="bnav-members" onclick="switchTab('members')" aria-label="Members">
-      <i data-lucide="users"></i>
-      <span>Members</span>
-    </button>
-    <button class="bottom-nav-item" id="bnav-attendance" onclick="switchTab('attendance')" aria-label="Attendance">
-      <i data-lucide="clipboard-list"></i>
-      <span>Attendance</span>
-    </button>
-    <button class="bottom-nav-item" id="bnav-funds" onclick="switchTab('funds')" aria-label="Funds">
-      <i data-lucide="wallet"></i>
-      <span>Funds</span>
-    </button>
-  </nav>
-
-  <!-- B4: Global Search FAB (mobile only) -->
-  <button class="search-fab" id="search-fab" aria-label="Search">
-    <i data-lucide="search"></i>
-  </button>
-
-  <!-- Global Search Overlay -->
-  <div class="search-overlay" id="search-overlay" role="dialog" aria-label="Search">
-    <div class="search-overlay-header">
-      <div class="search-overlay-input">
-        <i data-lucide="search" style="width:18px;height:18px;color:var(--primary);flex-shrink:0;"></i>
-        <input type="search" id="global-search-input" placeholder="Search members, activities..." autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-      <button class="search-overlay-close" id="search-overlay-close" aria-label="Close search">✕</button>
-    </div>
-    <div class="search-overlay-results" id="search-overlay-results">
-      <p class="search-result-empty">Start typing to search across all data…</p>
-    </div>
-  </div>
-
-  <!-- B5: Pull-to-refresh indicator -->
-  <div class="ptr-indicator" id="ptr-indicator">
-    <div class="ptr-spinner"></div>
-    <span>Syncing data…</span>
-  </div>
 
 </body>
 </html>

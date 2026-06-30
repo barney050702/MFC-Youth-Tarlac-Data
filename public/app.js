@@ -26,7 +26,7 @@ const SAMPLE_MEMBERS = [
   { id: 18, name: 'Jovel D. Garcia', chapter_area: 'EAST', role: 'Member', contact: '9038360124', email: '', status: 'Active', age: 14, birthday: '7/19/2011', address: 'Maliwalo Tarlac', parents_contact: '9386956160' },
   { id: 19, name: 'Jeanette Mary Salazar', chapter_area: 'EAST', role: 'Member', contact: '9101388805', email: '', status: 'Active', age: 18, birthday: '9/8/2007', address: 'Sitio Buni Bura', parents_contact: '9094708294' },
   { id: 20, name: 'Jeonard Francis Catap', chapter_area: 'EAST', role: 'Member', contact: '9701807117', email: '', status: 'Active', age: 18, birthday: '8/29/2007', address: 'Culipat, Tarlac City', parents_contact: '9121256554' },
-  { id: 21, name: 'Miguel Antonio Tañedo', chapter_area: 'EAST', role: 'Member', contact: '9919791125', email: '', status: 'Active', age: 18, birthday: '10/18/2011', address: 'San Sebastian, Tarlac City', parents_contact: '9584887998' },
+  { id: 21, name: 'Miguel Antonio TaÃ±edo', chapter_area: 'EAST', role: 'Member', contact: '9919791125', email: '', status: 'Active', age: 18, birthday: '10/18/2011', address: 'San Sebastian, Tarlac City', parents_contact: '9584887998' },
   { id: 22, name: 'Gabriel R. Magat', chapter_area: 'EAST', role: 'Member', contact: '9604136208', email: '', status: 'Active', age: 14, birthday: '01/16/2012', address: 'Sitio Calevo Tibag, Tarlac City', parents_contact: '9634409663' },
   { id: 23, name: 'Rajh Bernardo', chapter_area: 'EAST', role: 'Member', contact: '', email: '', status: 'Active', age: 14, birthday: '11/21/2014', address: 'San Manuel, Tarlac', parents_contact: '94821456916' },
   { id: 24, name: 'Jaycee Antonio', chapter_area: 'EAST', role: 'Member', contact: '9202031881', email: '', status: 'Active', age: 14, birthday: '11/23/2011', address: 'Batang Batang Tarlac City', parents_contact: '9389293791' },
@@ -132,7 +132,7 @@ const SAMPLE_MEMBERS = [
   { id: 122, name: 'Luto Reign', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 0, birthday: '', address: '', parents_contact: '' },
   { id: 123, name: 'Ma Yvonne', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 0, birthday: '', address: '', parents_contact: '' },
   { id: 124, name: 'Macapagal Ryza', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 0, birthday: '', address: '', parents_contact: '' },
-  { id: 125, name: 'Mañalac Hazel', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 18, birthday: '10/21/2005', address: 'Brgy. Balibago II, Tarlac City', parents_contact: '' },
+  { id: 125, name: 'MaÃ±alac Hazel', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 18, birthday: '10/21/2005', address: 'Brgy. Balibago II, Tarlac City', parents_contact: '' },
   { id: 126, name: 'Mandap Jhelaissa', chapter_area: '', role: 'Member', contact: '9079582030', email: 'jhlsxc@gmail.com', status: 'Active', age: 14, birthday: '03/12/2009', address: 'Blk. 2 San Manuel, Tarlac City', parents_contact: '' },
   { id: 127, name: 'Mandap Mica', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 17, birthday: '07/28/2007', address: 'Brgy. San Manuel, Tarlac City', parents_contact: '' },
   { id: 128, name: 'Masangcaty Sean Usher', chapter_area: '', role: 'Member', contact: '', email: '', status: 'Active', age: 14, birthday: '10/24/2009', address: 'Tariji, Tarlac City', parents_contact: '' },
@@ -421,7 +421,7 @@ class MembersDatabase {
         { name: 'Jovel D. Garcia', chapter_area: 'EAST', role: 'Member', contact: '9038360124', email: '', status: 'Active', age: 14, birthday: '7/19/2011', address: 'Maliwalo Tarlac', parents_contact: '9386056160' },
         { name: 'Jeanette Mary Salazar', chapter_area: 'EAST', role: 'Member', contact: '9101368605', email: '', status: 'Active', age: 18, birthday: '9/8/2007', address: 'Sitio Buni Bura', parents_contact: '9094708294' },
         { name: 'Jeonard Francis Catap', chapter_area: 'EAST', role: 'Member', contact: '9701807117', email: '', status: 'Active', age: 18, birthday: '8/29/2007', address: 'Culipat, Tarlac City', parents_contact: '9121256554' },
-        { name: 'Miguel Antonio Tañedo', chapter_area: 'EAST', role: 'Member', contact: '9919791125', email: '', status: 'Active', age: 18, birthday: '10/18/2011', address: 'San Sebastian, Tarlac City', parents_contact: '9584867998' },
+        { name: 'Miguel Antonio TaÃ±edo', chapter_area: 'EAST', role: 'Member', contact: '9919791125', email: '', status: 'Active', age: 18, birthday: '10/18/2011', address: 'San Sebastian, Tarlac City', parents_contact: '9584867998' },
         { name: 'Gabriel R. Magat', chapter_area: 'EAST', role: 'Member', contact: '9604138208', email: '', status: 'Active', age: 14, birthday: '01/16/2012', address: 'Sitio Calevo Tibag, Tarlac City', parents_contact: '9634409663' },
         { name: 'Rajh Bernardo', chapter_area: 'EAST', role: 'Member', contact: '', email: '', status: 'Active', age: 14, birthday: '11/21/2014', address: 'San Manuel, Tarlac', parents_contact: '9482145691' },
         { name: 'Jaycee Antonio', chapter_area: 'EAST', role: 'Member', contact: '9202031881', email: '', status: 'Active', age: 14, birthday: '11/23/2011', address: 'Batang Batang Tarlac City', parents_contact: '9389293791' },
@@ -1551,7 +1551,7 @@ function renderUpcomingActivities() {
           </div>
           <div class="dashboard-schedule-info">
             <h4 class="dashboard-schedule-title">${act.activity}</h4>
-            <p class="dashboard-schedule-subtitle">${act.title ? act.title : (act.chapter_area || '-')} • ${formattedDate}</p>
+            <p class="dashboard-schedule-subtitle">${act.title ? act.title : (act.chapter_area || '-')} â€¢ ${formattedDate}</p>
             <p class="dashboard-schedule-venue">${act.venue || 'TBA'}</p>
           </div>
         </div>
@@ -1641,7 +1641,7 @@ function renderUpcomingAgenda() {
 
     card.innerHTML = `
       <div class="agenda-card-details">
-        <span class="agenda-card-date">${formatDateString(item.date)} ${item.week ? `• ${item.week}` : ''}</span>
+        <span class="agenda-card-date">${formatDateString(item.date)} ${item.week ? `â€¢ ${item.week}` : ''}</span>
         <h3 class="agenda-card-title">${item.activity}</h3>
         <div class="agenda-card-badges">
           ${chapterBadge}
@@ -1661,7 +1661,7 @@ function renderUpcomingAgenda() {
   lucide.createIcons();
 }
 
-// ── Full Upcoming Agenda List ──
+// â”€â”€ Full Upcoming Agenda List â”€â”€
 let fullAgendaShowAll = false;
 const FULL_AGENDA_DEFAULT_LIMIT = 7;
 
@@ -1725,7 +1725,7 @@ function buildAgendaRows(activities) {
     let countdownLbl = 'days';
 
     if (item.status === 'Accomplished') {
-      countdownClass = 'accomplished'; countdownNum = '✔'; countdownLbl = 'DONE';
+      countdownClass = 'accomplished'; countdownNum = 'âœ”'; countdownLbl = 'DONE';
     } else if (daysUntil === null) {
       countdownNum = '?'; countdownLbl = '';
     } else if (daysUntil === 0) {
@@ -1761,9 +1761,9 @@ function buildAgendaRows(activities) {
         <span class="ali-title">${item.activity}</span>
         <div class="ali-meta">
           <span>${formatDateString(item.date)}</span>
-          ${item.time ? `<span class="dot">•</span><span>${timeFormatted}</span>` : ''}
-          ${item.week ? `<span class="dot">•</span><span>${item.week}</span>` : ''}
-          ${item.venue ? `<span class="dot">•</span><span>📍 ${item.venue}</span>` : ''}
+          ${item.time ? `<span class="dot">â€¢</span><span>${timeFormatted}</span>` : ''}
+          ${item.week ? `<span class="dot">â€¢</span><span>${item.week}</span>` : ''}
+          ${item.venue ? `<span class="dot">â€¢</span><span>ðŸ“ ${item.venue}</span>` : ''}
         </div>
       </div>
       <div class="agenda-list-badges">
@@ -1895,7 +1895,7 @@ function renderLateActivities() {
     }
 
     const statusLabel = item.status || 'Pending';
-    const statusBadge = `<span class="badge badge-status" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);">🕐 ${statusLabel}</span>`;
+    const statusBadge = `<span class="badge badge-status" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);">ðŸ• ${statusLabel}</span>`;
 
     let markBtn = '';
     if (isAdmin) {
@@ -1912,12 +1912,12 @@ function renderLateActivities() {
       const hNum = parseInt(h, 10);
       const ampm = hNum >= 12 ? 'PM' : 'AM';
       const h12 = hNum % 12 || 12;
-      timeFormatted = `• ${h12}:${m} ${ampm}`;
+      timeFormatted = `â€¢ ${h12}:${m} ${ampm}`;
     }
 
     card.innerHTML = `
       <div class="agenda-card-details">
-        <span class="agenda-card-date" style="color:#f87171;">${formatDateString(item.date)} ${timeFormatted} ${item.week ? `• ${item.week}` : ''} — <strong>OVERDUE</strong></span>
+        <span class="agenda-card-date" style="color:#f87171;">${formatDateString(item.date)} ${timeFormatted} ${item.week ? `â€¢ ${item.week}` : ''} â€” <strong>OVERDUE</strong></span>
         <h3 class="agenda-card-title">${item.activity}</h3>
         <div class="agenda-card-badges">
           ${chapterBadge}
@@ -1959,7 +1959,7 @@ function updateActivityFilters() {
   currentActivityFilters.search = searchInput.value;
   currentActivityFilters.month = monthFilter.value;
   currentActivityFilters.status = statusFilter.value;
-  // Chapter heads are locked to their assigned chapter — ignore DOM value
+  // Chapter heads are locked to their assigned chapter â€” ignore DOM value
   if (currentUserRole === 'chapterhead' && currentUserChapter) {
     currentActivityFilters.chapter = currentUserChapter;
     chapterFilter.value = currentUserChapter;
@@ -2024,7 +2024,7 @@ function formatDateString(dateStr) {
   return dateStr;
 }
 
-// Helper: Formats a date range for display in card headers (MONTH DD[–DD], YYYY)
+// Helper: Formats a date range for display in card headers (MONTH DD[â€“DD], YYYY)
 function formatDateRange(dateStart, dateEnd) {
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   if (!dateStart || !/^\d{4}-\d{2}-\d{2}$/.test(dateStart)) return formatDateString(dateStart);
@@ -2042,10 +2042,10 @@ function formatDateRange(dateStart, dateEnd) {
       const endDay = endDate.getDate();
       const endYear = endDate.getFullYear();
       if (sy === ey && sm === em) {
-        // Same month & year: "January 30–31, 2026"
+        // Same month & year: "January 30â€“31, 2026"
         return `${startMonth} ${startDay}\u2013${endDay}, ${startYear}`;
       } else if (sy === ey) {
-        // Same year different month: "January 30 – February 1, 2026"
+        // Same year different month: "January 30 â€“ February 1, 2026"
         return `${startMonth} ${startDay} \u2013 ${endMonth} ${endDay}, ${startYear}`;
       } else {
         // Different years
@@ -2112,7 +2112,7 @@ function formatBirthday(val) {
     const [y, m, d] = val.split('-');
     return `${m}/${d}/${y}`;
   }
-  // Handle M/D/YYYY or MM/DD/YYYY — normalize to 2-digit month/day
+  // Handle M/D/YYYY or MM/DD/YYYY â€” normalize to 2-digit month/day
   const parts = val.split('/');
   if (parts.length === 3) {
     const mm = parts[0].padStart(2, '0');
@@ -2241,7 +2241,7 @@ function renderMembers() {
 function updateMemberFilters() {
   currentMemberFilters.search = memberSearchInput.value;
   currentMemberFilters.status = memberStatusFilter.value;
-  // Chapter heads are locked to their assigned chapter — ignore DOM value
+  // Chapter heads are locked to their assigned chapter â€” ignore DOM value
   if (currentUserRole === 'chapterhead' && currentUserChapter) {
     currentMemberFilters.chapter = currentUserChapter;
     memberChapterFilter.value = currentUserChapter;
@@ -2808,7 +2808,7 @@ const btnAddFund = document.getElementById('btn-add-fund');
 let currentFundsFilters = { search: '', type: '' };
 
 function formatPeso(amount) {
-  return '₱' + Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return 'â‚±' + Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function renderFunds() {
@@ -3043,11 +3043,11 @@ function renderMonthlySummary() {
   tbody.innerHTML = sortedMonths.map(month => {
     const g = groups[month];
     const uniqueCount = g.uniqueIds.size;
-    // Avg rate = total attendance / (accomplished activities × total members) × 100
+    // Avg rate = total attendance / (accomplished activities Ã— total members) Ã— 100
     const denominator = g.accomplished * (totalMembers || 1);
     const rate = denominator > 0 ? Math.round((g.attendance / denominator) * 100) : 0;
     const rateClass = rate >= 70 ? 'high' : rate >= 40 ? 'mid' : rate > 0 ? 'low' : 'none';
-    const rateLabel = denominator > 0 ? `${rate}%` : '—';
+    const rateLabel = denominator > 0 ? `${rate}%` : 'â€”';
     return `<tr>
       <td><strong>${month}</strong></td>
       <td>${g.total}</td>
@@ -3077,7 +3077,7 @@ function renderMonthlySummary() {
     <td style="color:#ef4444;">${totals.can}</td>
     <td>${totals.att}</td>
     <td>${totals.uniq.size}</td>
-    <td>—</td>
+    <td>â€”</td>
   </tr>`;
 }
 
@@ -3530,7 +3530,7 @@ function parseSheetRows(rows, type) {
   }
 
   if (type === 'activities') {
-    // Detect column positions — all optional, fall back to -1 (blank)
+    // Detect column positions â€” all optional, fall back to -1 (blank)
     const monthIdx = headers.findIndex(h => h.includes('month'));
     const weekIdx = headers.findIndex(h => h.includes('week'));
     const dateIdx = headers.findIndex(h => h.includes('date') && !h.includes('end'));
@@ -3558,7 +3558,7 @@ function parseSheetRows(rows, type) {
         activityVal = String(firstNonEmpty).trim();
       }
 
-      // Dates — handle both string values and native JS Date objects from SheetJS
+      // Dates â€” handle both string values and native JS Date objects from SheetJS
       const rawDateCell = dateIdx !== -1 ? line[dateIdx] : null;
       const rawDateEndCell = dateEndIdx !== -1 ? line[dateEndIdx] : null;
       const rawDate = getCell(line, dateIdx);
@@ -3574,7 +3574,7 @@ function parseSheetRows(rows, type) {
         if (coordMember) coordId = coordMember.id;
       }
 
-      // Attendees — comma-separated names matched against member list
+      // Attendees â€” comma-separated names matched against member list
       let attIds = [];
       const attendeesStr = getCell(line, attendeesIdx);
       if (attendeesStr) {
@@ -3876,7 +3876,7 @@ function updateRoleUI() {
     const currentEmail = localStorage.getItem('current_username') || 'admin@example.com';
     const roleText = currentUserRole === 'chapterhead' ? `Chapter Head (${currentUserChapter || 'Assigned Chapter'})` : 'Super Admin';
     const welcomeBanner = document.getElementById('welcome-banner-title');
-    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentEmail}! 👋`;
+    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentEmail}! ðŸ‘‹`;
     if (dropdownUserName) dropdownUserName.textContent = currentEmail;
     if (dropdownUserEmail) dropdownUserEmail.textContent = roleText;
     const sidebarUserName = document.getElementById('sidebar-user-name');
@@ -3900,7 +3900,7 @@ function updateRoleUI() {
     if (btnAuth) btnAuth.classList.remove('hidden'); // Show login button in menu
     const currentName = localStorage.getItem('current_username') || 'Guest User';
     const welcomeBanner = document.getElementById('welcome-banner-title');
-    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentName} ! 👋`;
+    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentName} ! ðŸ‘‹`;
     if (dropdownUserName) dropdownUserName.textContent = currentName;
     if (dropdownUserEmail) dropdownUserEmail.textContent = 'View-Only Mode';
     const sidebarUserName = document.getElementById('sidebar-user-name');
@@ -4017,22 +4017,10 @@ let currentUserRole = null;
 let currentUserChapter = null;
 
 firebase.auth().onAuthStateChanged(async (user) => {
-  // Hide auth loading splash once Firebase has resolved the session
-  const authLoadingScreen = document.getElementById('auth-loading-screen');
-  if (authLoadingScreen) {
-    authLoadingScreen.style.transition = 'opacity 0.3s';
-    authLoadingScreen.style.opacity = '0';
-    setTimeout(() => authLoadingScreen.remove(), 300);
-  }
-
   if (user) {
     isAdmin = true;
     localStorage.setItem('is_admin', 'true');
     localStorage.setItem('current_username', user.email);
-
-    // Hide welcome screen immediately — don't wait for Firestore role fetch
-    hideWelcomeScreen();
-    lucide.createIcons();
 
     if (db) {
       try {
@@ -4067,6 +4055,7 @@ firebase.auth().onAuthStateChanged(async (user) => {
     }
 
     updateRoleUI();
+    hideWelcomeScreen();
     lucide.createIcons();
   } else {
     isAdmin = false;
@@ -4097,8 +4086,6 @@ document.getElementById('welcome-admin-form').addEventListener('submit', async (
     welcomeError.classList.add('hidden');
     document.getElementById('welcome-passcode-field').value = '';
     document.getElementById('welcome-admin-email').value = '';
-    // Hide welcome screen immediately — onAuthStateChanged will handle role fetch
-    hideWelcomeScreen();
   } catch (err) {
     const msg = err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'
       ? 'Invalid email or password. Please try again.'
@@ -4189,7 +4176,7 @@ updateRoleUI();
 switchTab('dashboard');
 
 // ==========================================
-// TOP SCROLLBAR SYNC — Members Table
+// TOP SCROLLBAR SYNC â€” Members Table
 // ==========================================
 (function initMembersTopScroll() {
   const topScroll = document.getElementById('members-top-scroll');
@@ -4316,7 +4303,7 @@ function renderOrgChart() {
 
   if (!containerAreaYouth) return;
 
-  // Get the chapter field — stored as UPPERCASE (EAST, NORTH, WEST, SOUTH, CENTRAL, AREA)
+  // Get the chapter field â€” stored as UPPERCASE (EAST, NORTH, WEST, SOUTH, CENTRAL, AREA)
   const getMemberChapter = (m) => (m.chapter_area || m.chapter || '').trim().toUpperCase();
 
   const renderList = (container, rolePattern, chapterMatch = null) => {
@@ -4344,10 +4331,10 @@ function renderOrgChart() {
   // Area-level positions (no chapter filter needed)
   renderList(containerAreaYouth, 'area youth');
   renderList(containerAreaLit, 'area lit');
-  // NOTE: Mission Volunteer is a free-text editable field — do NOT overwrite it here
+  // NOTE: Mission Volunteer is a free-text editable field â€” do NOT overwrite it here
   // Its value is saved to localStorage and restored below
 
-  // Chapter-level positions — regions stored as UPPERCASE in chapter_area field
+  // Chapter-level positions â€” regions stored as UPPERCASE in chapter_area field
   const regions = ['EAST', 'NORTH', 'WEST', 'SOUTH', 'CENTRAL'];
 
   regions.forEach(region => {
@@ -5308,176 +5295,3 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-
-// ==========================================
-// MOBILE IMPROVEMENTS (Phase C)
-// ==========================================
-
-// C1 — Sync bottom nav with switchTab
-(function () {
-  const bnavMap = { dashboard:'bnav-dashboard', activities:'bnav-activities', members:'bnav-members', attendance:'bnav-attendance', funds:'bnav-funds' };
-  const _orig = switchTab;
-  switchTab = function (tabName, subTabName) {
-    _orig(tabName, subTabName);
-    Object.values(bnavMap).forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('active'); });
-    const bid = bnavMap[tabName];
-    if (bid) { const el=document.getElementById(bid); if(el) el.classList.add('active'); }
-    lucide.createIcons();
-  };
-})();
-
-// C2 — Mobile card renderers
-function isMobile() { return window.innerWidth <= 768; }
-
-function renderActivitiesMobileCards() {
-  const container = document.getElementById('activities-mobile-cards');
-  if (!container) return;
-  let data = dbActivities.getFiltered(currentActivityFilters).filter(a => a.status === 'Accomplished');
-  container.innerHTML = data.length === 0
-    ? '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No activities found.</p>'
-    : data.map(a => `
-        <div class="mobile-data-card">
-          <div class="mobile-data-card-title">${a.title || a.activity || '—'}</div>
-          <div class="mobile-data-card-meta">
-            <span class="badge badge-chapter">${a.chapter_area || '—'}</span>
-            <span>${a.date ? formatDateRange(a.date, a.date_end) : '—'}</span>
-            ${a.held_in ? `<span>· ${a.held_in}</span>` : ''}
-          </div>
-          ${isAdmin ? `<div class="mobile-data-card-actions">
-            <button class="btn btn-sm btn-outline" onclick="openEditActivityModal(${a.id})"><i data-lucide="pencil"></i> Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteActivity(${a.id})"><i data-lucide="trash-2"></i></button>
-          </div>` : ''}
-        </div>`).join('');
-  lucide.createIcons();
-}
-
-function renderMembersMobileCards() {
-  const container = document.getElementById('members-mobile-cards');
-  if (!container) return;
-  const data = dbMembers.getFiltered(currentMemberFilters);
-  container.innerHTML = data.length === 0
-    ? '<p style="color:var(--text-muted);text-align:center;padding:2rem;">No members found.</p>'
-    : data.map(m => `
-        <div class="mobile-data-card" onclick="openMemberProfile(${m.id})">
-          <div class="mobile-data-card-title">${m.name || '—'}</div>
-          <div class="mobile-data-card-meta">
-            <span class="badge badge-chapter">${m.chapter_area || m.chapter || '—'}</span>
-            <span class="badge badge-status ${(m.status||'active').toLowerCase()}">${m.status||'Active'}</span>
-            ${m.role && m.role !== 'Member' ? `<span class="leader-role-badge">${m.role}</span>` : ''}
-          </div>
-          ${m.contact ? `<div class="mobile-data-card-meta" style="gap:0.3rem;"><i data-lucide="phone" style="width:12px;height:12px;"></i> ${m.contact}</div>` : ''}
-        </div>`).join('');
-  lucide.createIcons();
-}
-
-// Inject mobile card containers on DOM-ready
-(function injectMobileCardContainers() {
-  const actPanel = document.getElementById('panel-activities');
-  if (actPanel && !document.getElementById('activities-mobile-cards')) {
-    const wrap = document.createElement('div');
-    wrap.id = 'activities-mobile-cards'; wrap.className = 'mobile-cards-container'; wrap.style.padding = '0 1rem 1rem';
-    actPanel.appendChild(wrap);
-  }
-  const memPanel = document.getElementById('panel-members');
-  if (memPanel && !document.getElementById('members-mobile-cards')) {
-    const wrap = document.createElement('div');
-    wrap.id = 'members-mobile-cards'; wrap.className = 'mobile-cards-container'; wrap.style.padding = '0 1rem 1rem';
-    memPanel.appendChild(wrap);
-  }
-})();
-
-// C3 — Skeleton loaders
-function showSkeletons() {
-  ['activities-mobile-cards','members-mobile-cards'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = Array(4).fill('<div class="skeleton-card"><span class="skeleton-line long"></span><span class="skeleton-line medium"></span><span class="skeleton-line short"></span></div>').join('');
-  });
-}
-if (isMobile()) showSkeletons();
-
-// C4 — Swipe-to-dismiss modals
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  let startY = 0;
-  overlay.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
-  overlay.addEventListener('touchend', e => {
-    if (e.changedTouches[0].clientY - startY > 100) overlay.classList.add('hidden');
-  }, { passive: true });
-});
-
-// C5 — Pull-to-refresh
-(function initPTR() {
-  let startY = 0, pulling = false;
-  const ptrEl = document.getElementById('ptr-indicator');
-  if (!ptrEl) return;
-  document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
-  document.addEventListener('touchmove', e => {
-    if (e.touches[0].clientY - startY > 60 && window.scrollY === 0 && !pulling) {
-      pulling = true; ptrEl.classList.add('ptr-visible');
-    }
-  }, { passive: true });
-  document.addEventListener('touchend', () => {
-    if (!pulling) return;
-    pulling = false;
-    setTimeout(() => {
-      ptrEl.classList.remove('ptr-visible');
-      const active = document.querySelector('[id^="panel-"]:not(.hidden)');
-      if (active) {
-        const p = active.id.replace('panel-','');
-        if (p==='dashboard') renderDashboard();
-        else if (p==='activities') renderActivities();
-        else if (p==='members') renderMembers();
-        else if (p==='funds') renderFunds();
-      }
-    }, 900);
-  }, { passive: true });
-})();
-
-// C6 — Global Search FAB
-(function initGlobalSearch() {
-  const fab = document.getElementById('search-fab');
-  const overlay = document.getElementById('search-overlay');
-  const closeBtn = document.getElementById('search-overlay-close');
-  const input = document.getElementById('global-search-input');
-  const results = document.getElementById('search-overlay-results');
-  if (!fab || !overlay || !input || !results) return;
-
-  const openSearch = () => { overlay.classList.add('active'); setTimeout(() => input.focus(), 100); lucide.createIcons(); };
-  const closeSearch = () => {
-    overlay.classList.remove('active');
-    input.value = '';
-    results.innerHTML = '<p class="search-result-empty">Start typing to search across all data…</p>';
-  };
-
-  fab.addEventListener('click', openSearch);
-  closeBtn && closeBtn.addEventListener('click', closeSearch);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
-
-  input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    if (!q || q.length < 2) { results.innerHTML = '<p class="search-result-empty">Start typing to search across all data…</p>'; return; }
-
-    const memberHits = dbMembers.getAll()
-      .filter(m => (m.name||'').toLowerCase().includes(q) || (m.chapter_area||'').toLowerCase().includes(q) || (m.role||'').toLowerCase().includes(q))
-      .slice(0, 8);
-    const activityHits = dbActivities.getAll()
-      .filter(a => (a.title||a.activity||'').toLowerCase().includes(q) || (a.chapter_area||'').toLowerCase().includes(q))
-      .slice(0, 8);
-
-    const all = [
-      ...memberHits.map(m => ({ type:'Member', name:m.name, meta:`${m.chapter_area||''} · ${m.role||'Member'}`, action:()=>{ closeSearch(); switchTab('members'); setTimeout(()=>openMemberProfile(m.id),200); } })),
-      ...activityHits.map(a => ({ type:'Activity', name:a.title||a.activity, meta:`${a.chapter_area||''} · ${a.date||''}`, action:()=>{ closeSearch(); switchTab('activities'); } }))
-    ];
-
-    if (all.length === 0) { results.innerHTML = '<p class="search-result-empty">No results found.</p>'; return; }
-
-    results.innerHTML = all.map((r,i) => `
-      <div class="search-result-item" data-idx="${i}">
-        <span class="search-result-type">${r.type}</span>
-        <span class="search-result-name">${r.name}</span>
-        <span class="search-result-meta">${r.meta}</span>
-      </div>`).join('');
-    results.querySelectorAll('.search-result-item').forEach((el,i) => el.addEventListener('click', () => all[i].action()));
-  });
-})();
-
-// C7 — Theme already persists via localStorage (applyTheme saves to localStorage on every toggle)
