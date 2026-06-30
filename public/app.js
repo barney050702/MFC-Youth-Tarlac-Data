@@ -543,10 +543,12 @@ class MembersDatabase {
         });
         
         // Ensure Aguinaldo is assigned to West
-        const aguinaldo = newData.find(m => m.name === 'Aguinaldo, Allen Kristian');
-        if (aguinaldo && aguinaldo.area !== 'West') {
-          aguinaldo.area = 'West';
-          db.collection('members').doc(aguinaldo.id.toString()).set(aguinaldo);
+        const aguinaldo = newData.find(m => m && m.name === 'Aguinaldo, Allen Kristian');
+        if (aguinaldo && aguinaldo.chapter_area !== 'WEST') {
+          aguinaldo.chapter_area = 'WEST';
+          if (aguinaldo.id != null) {
+            db.collection('members').doc(aguinaldo.id.toString()).set(aguinaldo);
+          }
         }
 
         if (newData.length > 0 || snapshot.empty) {
