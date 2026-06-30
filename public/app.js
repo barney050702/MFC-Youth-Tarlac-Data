@@ -3666,6 +3666,8 @@ function updateRoleUI() {
     if (adminOnlyMenu) adminOnlyMenu.classList.remove('hidden');
     if (btnAuth) btnAuth.classList.add('hidden'); // Hide login button from menu
     const currentName = localStorage.getItem('current_username') || 'MFC Youth Tarlac Moderator';
+    const welcomeBanner = document.getElementById('welcome-banner-title');
+    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentName} ! 👋`;
     if (dropdownUserName) dropdownUserName.textContent = currentName;
     if (dropdownUserEmail) dropdownUserEmail.textContent = 'Full Access Mode';
     const sidebarUserName = document.getElementById('sidebar-user-name');
@@ -3688,6 +3690,8 @@ function updateRoleUI() {
     if (adminOnlyMenu) adminOnlyMenu.classList.add('hidden');
     if (btnAuth) btnAuth.classList.remove('hidden'); // Show login button in menu
     const currentName = localStorage.getItem('current_username') || 'Guest User';
+    const welcomeBanner = document.getElementById('welcome-banner-title');
+    if (welcomeBanner) welcomeBanner.innerHTML = `Hello, ${currentName} ! 👋`;
     if (dropdownUserName) dropdownUserName.textContent = currentName;
     if (dropdownUserEmail) dropdownUserEmail.textContent = 'View-Only Mode';
     const sidebarUserName = document.getElementById('sidebar-user-name');
