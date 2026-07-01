@@ -1,0 +1,11 @@
+const fs = require('fs');
+let content = fs.readFileSync('public/app.js', 'utf8');
+content = content.replace(/â€¢/g, '•');
+content = content.replace(/ðŸ“ /g, '📍');
+content = content.replace(/ðŸ• /g, '🕒');
+content = content.replace(/â€”/g, '—');
+content = content.replace(/â‚±/g, '₱');
+content = content.replace(/âœ”/g, '✔');
+content = content.replace(/â€“/g, '–');
+fs.writeFileSync('public/app.js', content);
+console.log('Fixed mojibakes in app.js');

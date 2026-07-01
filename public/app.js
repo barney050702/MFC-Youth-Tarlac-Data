@@ -1,4 +1,5 @@
 // ==========================================
+import { dbActivities } from './activity.js';
 // 1. SAMPLE SEED DATA (RELATIONAL WITH 152 MEMBERS)
 // ==========================================
 
@@ -249,7 +250,7 @@ function refreshActiveView() {
 // 2. CORE DATABASES CLASSES
 // ==========================================
 
-class ActivityDatabase {
+
   constructor() {
     this.storageKey = 'activities_db_records_v2';
     this.activities = this.loadFromStorage();
@@ -258,26 +259,20 @@ class ActivityDatabase {
 
   setupFirebaseSync() {
     db.collection('activities').onSnapshot(snapshot => {
-      let isFirstLoad = false;
-      if (snapshot.empty && this.activities.length > 0) {
-        // Seed Firebase from local
-        this.activities.forEach(act => {
-          db.collection('activities').doc(act.id.toString()).set(act);
-        });
-        isFirstLoad = true;
+      const newData = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.firebase_id = doc.id;
+        newData.push(data);
+      });
+      if (newData.length > 0 || snapshot.empty) {
+        this.activities = newData;
+        this.saveToStorage();
+        refreshActiveView();
       }
-
-      if (!isFirstLoad) {
-        const newData = [];
-        snapshot.forEach(doc => {
-          newData.push(doc.data());
-        });
-        if (newData.length > 0 || snapshot.empty) {
-          this.activities = newData;
-          this.saveToStorage();
-          refreshActiveView();
-        }
-      }
+    }, err => {
+      console.error('Firestore Activities Sync Error:', err);
+      alert('Network error syncing activities from database. Please check your connection.');
     });
   }
 
@@ -339,7 +334,8 @@ class ActivityDatabase {
     if (index !== -1) {
       this.activities[index] = { ...this.activities[index], ...updatedFields };
       this.saveToStorage();
-      if (db) db.collection('activities').doc(id.toString()).set(this.activities[index]);
+      const firestoreId = this.activities[index].firebase_id || id.toString();
+      if (db) db.collection('activities').doc(firestoreId).set(this.activities[index]);
       return true;
     }
     return false;
@@ -348,9 +344,10 @@ class ActivityDatabase {
   delete(id) {
     const index = this.activities.findIndex(a => a.id === parseInt(id));
     if (index !== -1) {
+      const firestoreId = this.activities[index].firebase_id || id.toString();
       this.activities.splice(index, 1);
       this.saveToStorage();
-      if (db) db.collection('activities').doc(id.toString()).delete();
+      if (db) db.collection('activities').doc(firestoreId).delete();
       return true;
     }
     return false;
@@ -398,7 +395,7 @@ class MembersDatabase {
       this.members = [];
 
       // Sync activities default seed
-      const actDb = new ActivityDatabase();
+      const actDb = dbActivities;
       localStorage.setItem(actDb.storageKey, JSON.stringify([]));
       actDb.activities = [];
     } else {
@@ -528,43 +525,35 @@ class MembersDatabase {
 
   setupFirebaseSync() {
     db.collection('members').onSnapshot(snapshot => {
-      let isFirstLoad = false;
-      if (snapshot.empty && this.members.length > 0) {
-        this.members.forEach(member => {
-          db.collection('members').doc(member.id.toString()).set(member);
-        });
-        isFirstLoad = true;
-      }
-
-      if (!isFirstLoad) {
-        const newData = [];
-        snapshot.forEach(doc => {
-          newData.push(doc.data());
-        });
-        
-        // Ensure Aguinaldo is assigned to West
-        const aguinaldo = newData.find(m => m && m.name === 'Aguinaldo, Allen Kristian');
-        if (aguinaldo && aguinaldo.chapter_area !== 'WEST') {
-          aguinaldo.chapter_area = 'WEST';
-          if (aguinaldo.id != null) {
-            db.collection('members').doc(aguinaldo.id.toString()).set(aguinaldo);
-          }
-        }
-
-        if (newData.length > 0 || snapshot.empty) {
-          this.members = newData;
-          this.saveToStorage();
-          if (typeof refreshActiveView === 'function') refreshActiveView();
+      const newData = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.firebase_id = doc.id;
+        newData.push(data);
+      });
+      
+      // Ensure Aguinaldo is assigned to West
+      const aguinaldo = newData.find(m => m && m.name === 'Aguinaldo, Allen Kristian');
+      if (aguinaldo && aguinaldo.chapter_area !== 'WEST') {
+        aguinaldo.chapter_area = 'WEST';
+        if (aguinaldo.id != null) {
+          db.collection('members').doc(aguinaldo.id.toString()).set(aguinaldo);
         }
       }
+
+      this.members = newData;
+      this.saveToStorage();
+      if (typeof refreshActiveView === 'function') refreshActiveView();
+    }, err => {
+      console.error('Firestore Members Sync Error:', err);
+      alert('Network error syncing members from database. Please check your connection.');
     });
   }
 
   loadFromStorage() {
     const data = localStorage.getItem(this.storageKey);
     if (!data) {
-      localStorage.setItem(this.storageKey, JSON.stringify(SAMPLE_MEMBERS));
-      return [...SAMPLE_MEMBERS];
+      return [];
     }
     try {
       return JSON.parse(data);
@@ -630,7 +619,8 @@ class MembersDatabase {
         age: parseInt(updatedFields.age) || 0
       };
       this.saveToStorage();
-      if (db) db.collection('members').doc(id.toString()).set(this.members[index]);
+      const firestoreId = this.members[index].firebase_id || id.toString();
+      if (db) db.collection('members').doc(firestoreId).set(this.members[index]);
       return true;
     }
     return false;
@@ -657,8 +647,9 @@ class MembersDatabase {
       if (changed) dbActs.saveToStorage();
 
       this.saveToStorage();
-      if (db) db.collection('members').doc(id.toString()).delete();
-      if (typeof renderActivities === 'function') renderActivities();
+      const firestoreId = this.members[index].firebase_id || id.toString();
+      if (db) db.collection('members').doc(firestoreId).delete();
+      if (typeof renderActivities === 'function') refreshActiveView();
       return true;
     }
     return false;
@@ -731,30 +722,25 @@ class FundsDatabase {
 
   setupFirebaseSync() {
     db.collection('funds').onSnapshot(snapshot => {
-      let isFirstLoad = false;
-      if (snapshot.empty && this.records.length > 0) {
-        this.records.forEach(record => {
-          db.collection('funds').doc(record.id.toString()).set(record);
-        });
-        isFirstLoad = true;
+      const newData = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.firebase_id = doc.id;
+        newData.push(data);
+      });
+      if (newData.length > 0 || snapshot.empty) {
+        this.records = newData;
+        this.saveToStorage();
+        if (typeof refreshActiveView === 'function') refreshActiveView();
       }
-
-      if (!isFirstLoad) {
-        const newData = [];
-        snapshot.forEach(doc => {
-          newData.push(doc.data());
-        });
-        if (newData.length > 0 || snapshot.empty) {
-          this.records = newData;
-          this.saveToStorage();
-          if (typeof refreshActiveView === 'function') refreshActiveView();
-        }
-      }
+    }, err => {
+      console.error('Firestore Funds Sync Error:', err);
+      alert('Network error syncing funds from database. Please check your connection.');
     });
   }
   loadFromStorage() {
     const data = localStorage.getItem(this.storageKey);
-    if (!data) { localStorage.setItem(this.storageKey, JSON.stringify(SAMPLE_FUNDS)); return [...SAMPLE_FUNDS]; }
+    if (!data) { return []; }
     try { return JSON.parse(data); } catch (e) { return []; }
   }
   saveToStorage() { localStorage.setItem(this.storageKey, JSON.stringify(this.records)); }
@@ -782,7 +768,8 @@ class FundsDatabase {
     if (i !== -1) {
       this.records[i] = { ...this.records[i], ...fields, amount: parseFloat(fields.amount) || 0 };
       this.saveToStorage();
-      if (db) db.collection('funds').doc(id.toString()).set(this.records[i]);
+      const firestoreId = this.records[i].firebase_id || id.toString();
+      if (db) db.collection('funds').doc(firestoreId).set(this.records[i]);
       return true;
     }
     return false;
@@ -790,9 +777,10 @@ class FundsDatabase {
   delete(id) {
     const i = this.records.findIndex(r => r.id === parseInt(id));
     if (i !== -1) {
+      const firestoreId = this.records[i].firebase_id || id.toString();
       this.records.splice(i, 1);
       this.saveToStorage();
-      if (db) db.collection('funds').doc(id.toString()).delete();
+      if (db) db.collection('funds').doc(firestoreId).delete();
       return true;
     }
     return false;
@@ -810,21 +798,20 @@ class ResourcesDatabase {
   
   setupFirebaseSync() {
     db.collection('resources').onSnapshot(snapshot => {
-      let isFirstLoad = false;
-      if (snapshot.empty && this.records.length > 0) {
-        this.records.forEach(r => db.collection('resources').doc(r.id.toString()).set(r));
-        isFirstLoad = true;
+      const newData = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.firebase_id = doc.id;
+        newData.push(data);
+      });
+      if (newData.length > 0 || snapshot.empty) {
+        this.records = newData;
+        this.saveToStorage();
+        if (typeof currentResourceCategory !== 'undefined') renderResources(currentResourceCategory);
       }
-      
-      if (!isFirstLoad) {
-        const newData = [];
-        snapshot.forEach(doc => newData.push(doc.data()));
-        if (newData.length > 0 || snapshot.empty) {
-          this.records = newData;
-          this.saveToStorage();
-          if (typeof currentResourceCategory !== 'undefined') renderResources(currentResourceCategory);
-        }
-      }
+    }, err => {
+      console.error('Firestore Resources Sync Error:', err);
+      alert('Network error syncing resources from database. Please check your connection.');
     });
   }
 
@@ -853,9 +840,10 @@ class ResourcesDatabase {
   delete(id) {
     const i = this.records.findIndex(r => r.id === parseInt(id));
     if (i !== -1) {
+      const firestoreId = this.records[i].firebase_id || id.toString();
       this.records.splice(i, 1);
       this.saveToStorage();
-      if (db) db.collection('resources').doc(id.toString()).delete();
+      if (db) db.collection('resources').doc(firestoreId).delete();
       return true;
     }
     return false;
@@ -2357,7 +2345,7 @@ activityForm.addEventListener('submit', (e) => {
     dbActivities.add(record);
   }
   closeActivityModal();
-  renderActivities();
+  refreshActiveView();
 });
 
 window.editActivity = function (id) {
@@ -2391,7 +2379,7 @@ window.editActivity = function (id) {
 window.deleteActivity = function (id) {
   if (confirm('Are you sure you want to delete this activity? This action cannot be undone.')) {
     dbActivities.delete(id);
-    renderActivities();
+    refreshActiveView();
   }
 };
 
@@ -2580,7 +2568,7 @@ memberForm.addEventListener('submit', (e) => {
     dbMembers.add(record);
   }
   closeMemberModal();
-  renderMembers();
+  refreshActiveView();
 });
 
 window.editMember = function (id) {
@@ -2656,7 +2644,7 @@ window.editMember = function (id) {
 window.deleteMember = function (id) {
   if (confirm('Are you sure you want to delete this member? This will clear them as coordinator or attendee from activities. This action cannot be undone.')) {
     dbMembers.delete(id);
-    renderMembers();
+    refreshActiveView();
   }
 };
 
@@ -2940,7 +2928,7 @@ fundForm.addEventListener('submit', (e) => {
   };
   if (id) { dbFunds.update(id, record); } else { dbFunds.add(record); }
   closeFundModal();
-  renderFunds();
+  refreshActiveView();
 });
 
 window.editFund = function (id) {
@@ -2963,7 +2951,7 @@ window.editFund = function (id) {
 window.deleteFund = function (id) {
   if (confirm('Delete this record? This cannot be undone.')) {
     dbFunds.delete(id);
-    renderFunds();
+    refreshActiveView();
   }
 };
 
@@ -5297,5 +5285,13 @@ if ('serviceWorker' in navigator) {
       .catch(err => {
         console.log('ServiceWorker registration failed: ', err);
       });
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        window.location.reload();
+        refreshing = true;
+      }
+    });
   });
 }

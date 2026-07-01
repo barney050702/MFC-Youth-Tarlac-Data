@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -172,7 +172,7 @@
           </div>
           <div class="welcome-input-group">
             <i data-lucide="key-round" class="input-icon"></i>
-            <input type="password" id="welcome-passcode-field" placeholder="Enter Password..." required autocomplete="current-password">
+            <input type="password" id="welcome-passcode-field" placeholder="Enter Password..." required autocomplete="off">
           </div>
           <div style="text-align: right; margin-top: -0.5rem; margin-bottom: 1rem;">
             <a href="#" id="btn-forgot-passcode-trigger" style="color: var(--primary); font-size: 0.85rem; text-decoration: none;">Forgot Password?</a>
@@ -185,13 +185,18 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div class="app-container hidden">
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+<div class="app-container hidden">
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle btn btn-secondary" style="position: absolute; top: 1rem; right: 1rem; z-index: 1000;">
+    <i data-lucide="moon"></i> Toggle Theme
+  </button>
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
-    <!-- Sidebar Drawer -->
-    <aside id="sidebar-drawer" class="sidebar-drawer">
+  <!-- Sidebar Drawer -->
+  <aside id="sidebar-drawer" class="sidebar-drawer">
       <div class="sidebar-header">
         <div class="sidebar-logo">
           <img src="logo.png" alt="MFC Youth Logo">
@@ -488,6 +493,7 @@
       <section class="dashboard-chart-widget">
         <div class="widget-header">
           <h2>ACTIVITY STATUS OVERVIEW</h2>
+          <p class="widget-subtitle" style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.875rem;">View detailed activity metrics and progress towards goals.</p>
         </div>
         <div class="widget-content chart-widget-content">
           <div class="chart-container">
@@ -1838,7 +1844,202 @@
       <form id="auth-form">
         <div class="form-group">
           <label for="field-auth-passcode">Enter Admin Passcode</label>
-          <input type="password" id="field-auth-passcode" placeholder="e.g., admin123" required autocomplete="current-password">
+          <input type="password" id="field-auth-passcode" placeholder="e.g., admin123" required autocomplete="off">
+          <p id="auth-error-msg" class="error-msg hidden" style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+        </div>
+        <div class="modal-footer" style="margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-auth" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Unlock Features</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Passcode Modal -->
+  <div id="change-passcode-modal" class="modal-overlay hidden">
+    <div class="modal-card passcode-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2>Change Admin Passcode</h2>
+        <button id="btn-close-passcode-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="change-passcode-form">
+        <div class="form-group">
+          <label for="field-current-passcode">Current Passcode</label>
+          <input type="password" id="field-current-passcode" required autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label for="field-new-passcode">New Passcode</label>
+          <input type="password" id="field-new-passcode" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="field-confirm-passcode">Confirm New Passcode</label>
+          <input type="password" id="field-confirm-passcode" required autocomplete="new-password">
+          <p id="passcode-error-msg" class="error-msg hidden" style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;"></p>
+        </div>
+        <div class="modal-footer" style="margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-passcode" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Passcode</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- Avatar Cropper Modal -->
+  <div id="cropper-modal" class="modal-overlay hidden" style="z-index: 2000;">
+    <div class="modal-card" style="max-width: 500px; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h2>Crop Profile Picture</h2>
+        <button id="btn-close-cropper-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" style="padding: 1rem;">
+        <div style="width: 100%; height: 300px; background: #0b0f19;">
+          <img id="cropper-image" src="" style="max-width: 100%; display: block;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-cancel-cropper" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="btn-save-cropper" class="btn btn-primary">Crop & Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Viewer Modal (Lightbox) -->
+  <div id="image-viewer-modal" class="modal-overlay hidden" style="z-index: 2000; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: pointer;">
+    <div style="position: relative; width: 90vw; max-width: 600px; max-height: 90vh; display: flex; justify-content: center;">
+      <button id="btn-close-image-viewer" class="btn-close" style="position: absolute; top: -40px; right: 0; color: white;"><i data-lucide="x" style="width: 32px; height: 32px;"></i></button>
+      <img id="image-viewer-img" src="" style="width: 100%; height: auto; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    </div>
+  </div>
+
+  <!-- Floating Themes Trigger Tab -->
+  <div class="theme-floating-trigger" id="theme-floating-trigger" title="Theme Customization">
+    <i data-lucide="brush"></i>
+  </div>
+
+  <!-- Themes Sliding Drawer -->
+  <aside id="theme-drawer" class="theme-drawer">
+    <div class="theme-header">
+      <h2>Themes</h2>
+      <button id="btn-close-theme" class="btn-close" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x" style="width:20px; height:20px;"></i></button>
+    </div>
+    
+    <div class="theme-body">
+      <!-- Mode -->
+      <div class="theme-section">
+        <h3>Mode</h3>
+        <div class="theme-mode-options">
+          <button class="theme-mode-btn" id="theme-mode-auto" data-mode="auto" title="System Theme">
+            <i data-lucide="sparkles"></i>
+          </button>
+          <button class="theme-mode-btn" id="theme-mode-light" data-mode="light" title="Light Theme">
+            <i data-lucide="sun"></i>
+          </button>
+          <button class="theme-mode-btn" id="theme-mode-dark" data-mode="dark" title="Dark Theme">
+            <i data-lucide="moon"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Color Accent -->
+      <div class="theme-section">
+        <h3>Color</h3>
+        <div class="theme-color-options">
+          <button class="theme-color-btn" data-color="indigo" title="Indigo"><div class="theme-color-leaf" style="--btn-color: #6366f1;"></div></button>
+          <button class="theme-color-btn" data-color="green" title="Green"><div class="theme-color-leaf" style="--btn-color: #10b981;"></div></button>
+          <button class="theme-color-btn" data-color="blue" title="Blue"><div class="theme-color-leaf" style="--btn-color: #3b82f6;"></div></button>
+          <button class="theme-color-btn" data-color="teal" title="Teal"><div class="theme-color-leaf" style="--btn-color: #0d9488;"></div></button>
+          <button class="theme-color-btn" data-color="purple" title="Purple"><div class="theme-color-leaf" style="--btn-color: #8b5cf6;"></div></button>
+          <button class="theme-color-btn" data-color="orange" title="Orange"><div class="theme-color-leaf" style="--btn-color: #f97316;"></div></button>
+          <button class="theme-color-btn" data-color="coral" title="Coral"><div class="theme-color-leaf" style="--btn-color: #ff4a4a;"></div></button>
+          <button class="theme-color-btn" data-color="red" title="Crimson"><div class="theme-color-leaf" style="--btn-color: #be123c;"></div></button>
+        </div>
+      </div>
+      
+      <!-- Border Radius -->
+      <div class="theme-section">
+        <div class="theme-slider-header">
+          <h3>Border Radius</h3>
+          <span id="radius-value-display">4</span>
+        </div>
+        <input type="range" id="theme-radius-slider" min="0" max="20" step="1" value="4" class="theme-slider">
+      </div>
+      
+      <!-- Default Font Size -->
+      <div class="theme-section">
+        <div class="theme-slider-header">
+          <h3>Default Font Size</h3>
+          <span id="font-value-display">0.8125 rem</span>
+        </div>
+        <input type="range" id="theme-font-slider" min="0.7" max="1.2" step="0.0625" value="0.8125" class="theme-slider">
+      </div>
+    </div>
+  </aside>
+
+  <!-- App Script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+            <input type="text" id="field-fund-category" placeholder="e.g., Offering, Venue, Food" list="fund-category-suggestions" autocomplete="off">
+            <datalist id="fund-category-suggestions">
+              <option value="Offering">
+              <option value="Donation">
+              <option value="Registration Fee">
+              <option value="Venue">
+              <option value="Food & Drinks">
+              <option value="Transportation">
+              <option value="Supplies">
+              <option value="Miscellaneous">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label for="field-fund-amount">Amount (₱) <span class="required">*</span></label>
+            <input type="number" id="field-fund-amount" min="0" step="0.01" placeholder="e.g., 500.00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="field-fund-description">Description</label>
+          <input type="text" id="field-fund-description" placeholder="e.g., Sunday offering collection">
+        </div>
+        <div class="form-group">
+          <label for="field-fund-notes">Reference / Notes</label>
+          <input type="text" id="field-fund-notes" placeholder="e.g., Receipt #123, handled by Juan">
+        </div>
+        <div class="form-group">
+          <label for="field-fund-receipt">Receipt Image</label>
+          <input type="file" id="field-fund-receipt" accept="image/*" style="display:none;">
+          <input type="hidden" id="field-fund-receipt-data">
+          <div id="fund-receipt-area" style="border:2px dashed rgba(255,255,255,0.15);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:border-color 0.2s;" onclick="document.getElementById('field-fund-receipt').click()">
+            <img id="fund-receipt-preview" src="" alt="Receipt preview" style="display:none;max-height:160px;max-width:100%;border-radius:8px;margin-bottom:8px;">
+            <div id="fund-receipt-placeholder" style="color:rgba(255,255,255,0.4);font-size:13px;">
+              <i data-lucide="image" style="width:28px;height:28px;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto;"></i>
+              Click to upload receipt image
+            </div>
+          </div>
+          <button type="button" id="btn-clear-receipt" class="btn btn-secondary" style="margin-top:6px;font-size:12px;padding:4px 10px;display:none;">
+            <i data-lucide="x"></i> Remove image
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-fund-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-submit-fund-modal" class="btn btn-primary">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Authentication Modal -->
+  <div id="auth-modal" class="modal-overlay hidden">
+    <div class="modal-card auth-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2>Admin Authentication</h2>
+        <button id="btn-close-auth-modal" class="btn-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="auth-form">
+        <div class="form-group">
+          <label for="field-auth-passcode">Enter Admin Passcode</label>
+          <input type="password" id="field-auth-passcode" placeholder="e.g., admin123" required autocomplete="off">
           <p id="auth-error-msg" class="error-msg hidden" style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;"></p>
         </div>
         <div class="modal-footer" style="margin-top: 1.5rem;">
@@ -1979,7 +2180,8 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js"></script>
+  <script src="theme.js"></script>
+  <script type="module" src="app.js?v=3"></script>
 
 </body>
 </html>

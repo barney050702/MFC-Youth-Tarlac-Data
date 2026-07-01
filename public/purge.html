@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Purge Extra Members</title>
+  <script src="js/seed-data.js"></script>
+</head>
+<body>
+  <h1>Purging extra members from Firebase...</h1>
+  <p id="status">Please wait...</p>
+  <script type="module">
+    import { db } from "./js/firebase-config.js";
+    import { collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    async function purge() {
+      try {
+        const validIds = new Set(SAMPLE_MEMBERS.map(m => String(m.id)));
+        
+        const snapshot = await getDocs(collection(db, 'members'));
+        let deleted = 0;
+        
+        for (const document of snapshot.docs) {
+          if (!validIds.has(document.id)) {
+            await deleteDoc(doc(db, 'members', document.id));
+            deleted++;
+            console.log('Deleted', document.id);
+          }
+        }
+        
+        document.getElementById('status').innerText = 'Done! Deleted ' + deleted + ' members. You can close this page now.';
+        // clear local storage so it pulls fresh
+        localStorage.removeItem('mfc_members');
+        localStorage.removeItem('sample_members_patch_v2');
+      } catch (err) {
+        document.getElementById('status').innerText = 'Error: ' + err.message;
+        console.error(err);
+      }
+    }
+    purge();
+  </script>
+</body>
+</html>

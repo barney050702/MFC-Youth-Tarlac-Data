@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfc-youth-cache-v8';
+const CACHE_NAME = 'mfc-youth-cache-v15';
 const urlsToCache = [
   './',
   './index.html',

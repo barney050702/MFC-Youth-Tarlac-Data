@@ -2245,6 +2245,7 @@ body.view-only .agenda-list-actions {
 .chart-container {
   width: 100%;
   max-width: 400px;
+  height: 300px;
   position: relative;
   margin: 1.5rem auto;
 }
